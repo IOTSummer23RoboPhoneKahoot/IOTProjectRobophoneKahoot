@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "822496908436",
+    "firebase_url": "https://iot-kahoot-robophone-sum-c655c-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "iot-kahoot-robophone-sum-c655c",
+    "storage_bucket": "iot-kahoot-robophone-sum-c655c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822496908436:android:ce42d445d5f3d2d82c5081",
+        "android_client_info": {
+          "package_name": "com.example.web_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "822496908436-dafdnd3ptkpph7kpqt0u81bcrs7cu2d0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTCiSX62ItnvI5Ac6-kMO4nhwuJYXZQiQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "822496908436-dafdnd3ptkpph7kpqt0u81bcrs7cu2d0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

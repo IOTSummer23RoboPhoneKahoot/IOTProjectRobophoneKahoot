@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>822496908436-jru5otj1si9bn7s510efinuucdchdj18.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.822496908436-jru5otj1si9bn7s510efinuucdchdj18</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBqT1G89f3P0fnp5zvko68MtiMOi3KeIz8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>822496908436</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.webProject</string>
+	<key>PROJECT_ID</key>
+	<string>iot-kahoot-robophone-sum-c655c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>iot-kahoot-robophone-sum-c655c.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:822496908436:ios:aaac301fc6cc1bbf2c5081</string>
+	<key>DATABASE_URL</key>
+	<string>https://iot-kahoot-robophone-sum-c655c-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>
