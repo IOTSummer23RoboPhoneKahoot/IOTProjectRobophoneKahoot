@@ -35,6 +35,12 @@ class _GamePageState extends State<GamePage> {
   int _currentQuestionNumber = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _loadCurrentQuestionNumber();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -56,28 +62,29 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  void _showNextQuestion() async {
-    // Update next question time for all players to 1 minute from now.
-    DateTime questionTime = DateTime.now().add(Duration(minutes: 1));
-    String nextQuestionTime =
-        "${questionTime.hour}:${questionTime.minute}:${questionTime.second}";
-    String hourTime = "${questionTime.hour}";
-    String minuteTime = "${questionTime.minute}";
-    String secondTime = "${questionTime.second}";
-
-    _databaseRef.child('Robophone').once().then((DatabaseEvent event) {
-      _databaseRef.child('Robophone').update({
-        "nextHourTime": hourTime,
-        "nextMinuteTime": minuteTime,
-        "nextQuestionTime": nextQuestionTime,
-        "nextSecondTime": secondTime
-      });
+  void _loadCurrentQuestionNumber() async {
+    await _databaseRef
+        .child('Robophone/currentQuestion')
+        .once()
+        .then((DatabaseEvent event) {
+      if (event.snapshot.value != null) {
+        setState(() {
+          _currentQuestionNumber =
+              int.tryParse(event.snapshot.value.toString()) ??
+                  0; // Try to parse, if it fails, default to 0
+        });
+        _loadQuestion(
+            _currentQuestionNumber); // Load question according to the number fetched from the database
+      } else {
+        // Handle the case where the snapshot value is null, e.g. by setting a default question number or showing an error.
+      }
     });
+  }
 
-    // Fetch the next question from the database and update UI.
-    _databaseRef
+  void _loadQuestion(int questionNumber) async {
+    await _databaseRef
         .child('Robophone/questions')
-        .child('${_currentQuestionNumber + 1}')
+        .child('$questionNumber')
         .once()
         .then((DatabaseEvent event) {
       Map<dynamic, dynamic> questionData =
@@ -85,8 +92,27 @@ class _GamePageState extends State<GamePage> {
       setState(() {
         _questionText = questionData['text'];
         _answers = List<String>.from(questionData['options']);
-        _currentQuestionNumber += 1;
       });
     });
+  }
+
+  void _showNextQuestion() async {
+    // Update next question time for all players to 1 minute from now.
+    DateTime questionTime = DateTime.now().add(Duration(seconds: 5));
+    String nextQuestionTime =
+        "${questionTime.hour}:${questionTime.minute}:${questionTime.second}";
+
+    _currentQuestionNumber += 1;
+
+    await _databaseRef.child('Robophone').update({
+      "nextHourTime": questionTime.hour,
+      "nextMinuteTime": questionTime.minute,
+      "nextSecondTime": questionTime.second,
+      "nextQuestionTime": nextQuestionTime,
+      "currentQuestion": _currentQuestionNumber
+    });
+
+    // Fetch and display the next question
+    _loadQuestion(_currentQuestionNumber);
   }
 }
