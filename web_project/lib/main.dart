@@ -162,7 +162,7 @@ class _GamePageState extends State<GamePage> {
 
   void _loadQuestion(int questionNumber) async {
     await _databaseRef
-        .child('Robophone/questions')
+        .child('Robophone/questions/test')
         .child('$questionNumber')
         .once()
         .then((DatabaseEvent event) {
@@ -195,43 +195,3 @@ class _GamePageState extends State<GamePage> {
     _loadQuestion(_currentQuestionNumber);
   }
 }
-
-
-
-// show message 
-// class MyHomePage extends StatelessWidget {
-//   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-//   void showMessage(BuildContext context) {
-//     final snackBar = SnackBar(
-//       content: Text('Hello, this is a message!'),
-//       action: SnackBarAction(
-//         label: 'Close',
-//         onPressed: () {
-//           // Code to execute when the "Close" button is pressed.
-//         },
-//       ),
-//     );
-
-//     scaffoldKey.currentState?.showSnackBar(snackBar);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       key: scaffoldKey,
-//       appBar: AppBar(
-//         title: Text('Message Example'),
-//       ),
-//       body: Center(
-//         child: ElevatedButton(
-//           onPressed: () {
-//             showMessage(context);
-//           },
-//           child: Text('Show Message'),
-//         ),
-//       ),
-//     );
-//   }
-// }
-// func to use 

@@ -58,11 +58,15 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
 
   
 }
+
+
 class QuizCreatorPage extends StatefulWidget {
   @override
   _QuizCreatorPageState createState() => _QuizCreatorPageState();
 }
 class _QuizCreatorPageState extends State<QuizCreatorPage> {
+  int numOfQuestionsAdded=0;
+  bool isFinished=false;
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   TextEditingController correctOptionIndexController = TextEditingController();
   TextEditingController questionController = TextEditingController();
@@ -73,6 +77,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 
      List<Map<String, dynamic>> quizDataList = [];
         void addQuizData() {
+        // TODO: add the name of the quiz 
         String numOfQuestions=_NumOfQuestionPageState.numOfQuestionsController.text;
         String correctOptionIndex=correctOptionIndexController.text;
         String question = questionController.text;
@@ -82,13 +87,13 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
         String answer4 = answer4Controller.text;
 
         // Add the question and answer to the list
-        quizDataList.add({
+        numOfQuestionsAdded+=1;
+       _databaseRef.child('Robophone/questions/test/'+numOfQuestionsAdded.toString()).update({
         'question': question,
          'numOfQuestions': numOfQuestions,
         'correctOptionIndex':correctOptionIndex,
         'options': [answer1, answer2, answer3, answer4],
         });
-
         // Clear the text fields
           
         correctOptionIndexController.clear();
@@ -98,11 +103,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
         answer3Controller.clear();
         answer4Controller.clear();
   }
-  void saveQuizData() {
-   
-    _databaseRef.child('Robophone/questions/test').push().set(quizDataList);
 
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,16 +144,22 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
             ElevatedButton(
               onPressed: () {
                 addQuizData();
+                 if (numOfQuestionsAdded >= int.parse(_NumOfQuestionPageState.numOfQuestionsController.text)) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => introPage()),
+                  );
+                } 
               },
               child: Text('add Question'),
             ),
-            SizedBox(height: 20),
-             ElevatedButton(
-              onPressed: () {
-                saveQuizData();
-              },
-              child: Text('save Questions'),
-            ),
+            // SizedBox(height: 20),
+            //  ElevatedButton(
+            //   onPressed: () {
+            //     saveQuizData();
+            //   },
+            //   child: Text('save Questions'),
+            // ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
