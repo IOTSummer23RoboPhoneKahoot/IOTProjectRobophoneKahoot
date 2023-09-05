@@ -18,11 +18,52 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: GamePage(),
+      home:  introPage(),
     );
   }
 }
+class introPage extends StatefulWidget {
+  @override
+  _introPageState createState() => _introPageState();
+}
 
+class _introPageState extends State<introPage> {
+  final _databaseRef = FirebaseDatabase.instance.ref();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Robophone Kahoot Game'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+           children: <Widget>[
+              Text('Kahoot Game'), // Move 'Text' widget inside 'child'
+                ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GamePage()),
+                );
+              },
+              child: Text('Start Game'), // Move 'Text' widget inside 'child'
+            ),
+           ],
+          // children: <Widget>[
+          //   Text(_questionText),
+          //   for (var answer in _answers) Text(answer),
+          //   ElevatedButton(
+          //     onPressed: _showNextQuestion,
+          //     child: Text("Show Next Question"),
+          //   ),
+          // ],
+        ),
+      ),
+    );
+  }
+}
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
