@@ -1,7 +1,9 @@
+
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'CreateQuiz.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,9 +28,9 @@ class introPage extends StatefulWidget {
   @override
   _introPageState createState() => _introPageState();
 }
-
 class _introPageState extends State<introPage> {
   final _databaseRef = FirebaseDatabase.instance.ref();
+  String dataFromFirebase = '';
 
   @override
   Widget build(BuildContext context) {
@@ -37,33 +39,69 @@ class _introPageState extends State<introPage> {
         title: Text('Robophone Kahoot Game'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-           children: <Widget>[
-              Text('Kahoot Game'), // Move 'Text' widget inside 'child'
-                ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => GamePage()),
-                );
-              },
-              child: Text('Start Game'), // Move 'Text' widget inside 'child'
-            ),
-           ],
-          // children: <Widget>[
-          //   Text(_questionText),
-          //   for (var answer in _answers) Text(answer),
-          //   ElevatedButton(
-          //     onPressed: _showNextQuestion,
-          //     child: Text("Show Next Question"),
-          //   ),
-          // ],
-        ),
+        child: KahootWidget(),
+       
       ),
     );
   }
+  
 }
+class KahootWidget extends StatefulWidget {
+  @override
+  _KahootWidgetState createState() => _KahootWidgetState();
+}
+
+class _KahootWidgetState extends State<KahootWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Kahoot',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 40), // Add some spacing below the text
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                 Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => GamePage()),
+                    );
+              },
+              child: Text('Start Game'),
+            ),
+            SizedBox(width: 20), // Add spacing between buttons
+            ElevatedButton(
+              onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreateQuizApp()),
+                    );
+              },
+              child: Text('Create Game'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+//   void readDataFromFirebase() async {
+//     await _databaseRef.child('Robophone/questions').once().then((DatabaseEvent event) {
+//         setState(() {
+//           dataFromFirebase = event.snapshot.value.toString();
+//         });
+//           print(dataFromFirebase);
+      
+//       }).catchError((error) {
+//       // Handle errors if any
+//     });
+//   }
+// }
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
@@ -157,3 +195,43 @@ class _GamePageState extends State<GamePage> {
     _loadQuestion(_currentQuestionNumber);
   }
 }
+
+
+
+// show message 
+// class MyHomePage extends StatelessWidget {
+//   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+//   void showMessage(BuildContext context) {
+//     final snackBar = SnackBar(
+//       content: Text('Hello, this is a message!'),
+//       action: SnackBarAction(
+//         label: 'Close',
+//         onPressed: () {
+//           // Code to execute when the "Close" button is pressed.
+//         },
+//       ),
+//     );
+
+//     scaffoldKey.currentState?.showSnackBar(snackBar);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       key: scaffoldKey,
+//       appBar: AppBar(
+//         title: Text('Message Example'),
+//       ),
+//       body: Center(
+//         child: ElevatedButton(
+//           onPressed: () {
+//             showMessage(context);
+//           },
+//           child: Text('Show Message'),
+//         ),
+//       ),
+//     );
+//   }
+// }
+// func to use 
