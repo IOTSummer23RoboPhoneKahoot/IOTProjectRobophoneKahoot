@@ -3,7 +3,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'firebase_options.dart';
 import 'IntroPage.dart';
+import 'dart:math';
 
+String generatedPin = '0000'; 
+String generateRandomPin() {
+  // Generate a random 4-digit PIN
+  final Random random = Random();
+  final int min = 1000;
+  final int max = 9999;
+  final int randomNumber = min + random.nextInt(max - min);
+  return randomNumber.toString().padLeft(4, '0');
+}
 class CreateQuizApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -51,6 +61,7 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
+                generatedPin=generateRandomPin();
                  Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => QuizCreatorPage()),
@@ -75,7 +86,6 @@ class QuizCreatorPage extends StatefulWidget {
 }
 class _QuizCreatorPageState extends State<QuizCreatorPage> {
   int numOfQuestionsAdded=0;
-  bool isFinished=false;
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   TextEditingController correctOptionIndexController = TextEditingController();
   TextEditingController questionController = TextEditingController();
@@ -99,12 +109,15 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 
         // Add the question and answer to the list
         numOfQuestionsAdded+=1;
-       _databaseRef.child('Robophone/questions/test/quizzes/quiz1/'+numOfQuestionsAdded.toString()).update({
+        _databaseRef.child('Robophone/questions/test/quizzes/'+generatedPin+'/quizID').update({
+        'quizID': generatedPin,
+        });
+       _databaseRef.child('Robophone/questions/test/quizzes/'+generatedPin+'/questions/'+numOfQuestionsAdded.toString()).update({
         'question': question,
         'correctOptionIndex':correctOptionIndex,
         'options': [answer1, answer2, answer3, answer4],
         });
-        _databaseRef.child('Robophone/questions/test/quizzes/quiz1').update({
+        _databaseRef.child('Robophone/questions/test/quizzes/'+generatedPin+'/quizDetails').update({
         'nameOfQuiz':nameOfQuiz,
         'timeToAnswerPerQuestion':timeToAnswerPerQuestion,
         'numOfQuestions': numOfQuestions,
