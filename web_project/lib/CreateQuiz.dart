@@ -5,7 +5,7 @@ import 'firebase_options.dart';
 import 'IntroPage.dart';
 import 'dart:math';
 
-String generatedPin = '0000'; 
+String generatedPin = '0000';
 String generateRandomPin() {
   // Generate a random 4-digit PIN
   final Random random = Random();
@@ -14,6 +14,7 @@ String generateRandomPin() {
   final int randomNumber = min + random.nextInt(max - min);
   return randomNumber.toString().padLeft(4, '0');
 }
+
 class CreateQuizApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -26,15 +27,19 @@ class CreateQuizApp extends StatelessWidget {
     );
   }
 }
+
 class NumOfQuestionPage extends StatefulWidget {
   @override
   _NumOfQuestionPageState createState() => _NumOfQuestionPageState();
 }
+
 class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
-  static TextEditingController numOfQuestionsController = TextEditingController();
-  static TextEditingController timeToAnswerPerQuestionController = TextEditingController();
-  static TextEditingController nameOfQuizController=TextEditingController();
+  static TextEditingController numOfQuestionsController =
+      TextEditingController();
+  static TextEditingController timeToAnswerPerQuestionController =
+      TextEditingController();
+  static TextEditingController nameOfQuizController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,11 +66,11 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                generatedPin=generateRandomPin();
-                 Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => QuizCreatorPage()),
-                    );
+                generatedPin = generateRandomPin();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => QuizCreatorPage()),
+                );
               },
               child: Text('Continue'),
             ),
@@ -73,19 +78,19 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
         ),
       ),
     );
-  numOfQuestionsController.clear();
-  timeToAnswerPerQuestionController.clear();
-  nameOfQuizController.clear();
+    numOfQuestionsController.clear();
+    timeToAnswerPerQuestionController.clear();
+    nameOfQuizController.clear();
   }
 }
-
 
 class QuizCreatorPage extends StatefulWidget {
   @override
   _QuizCreatorPageState createState() => _QuizCreatorPageState();
 }
+
 class _QuizCreatorPageState extends State<QuizCreatorPage> {
-  int numOfQuestionsAdded=0;
+  int numOfQuestionsAdded = 0;
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   TextEditingController correctOptionIndexController = TextEditingController();
   TextEditingController questionController = TextEditingController();
@@ -94,44 +99,55 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   TextEditingController answer3Controller = TextEditingController();
   TextEditingController answer4Controller = TextEditingController();
 
-     List<Map<String, dynamic>> quizDataList = [];
-        void addQuizData() {
-        // TODO: add the name of the quiz 
-        String timeToAnswerPerQuestion=_NumOfQuestionPageState.timeToAnswerPerQuestionController.text;
-        String nameOfQuiz=_NumOfQuestionPageState.nameOfQuizController.text;
-        String numOfQuestions=_NumOfQuestionPageState.numOfQuestionsController.text;
-        String correctOptionIndex=correctOptionIndexController.text;
-        String question = questionController.text;
-        String answer1 = answer1Controller.text;
-        String answer2 = answer2Controller.text;
-        String answer3 = answer3Controller.text;
-        String answer4 = answer4Controller.text;
+  List<Map<String, dynamic>> quizDataList = [];
+  void addQuizData() {
+    // TODO: add the name of the quiz
+    String timeToAnswerPerQuestion =
+        _NumOfQuestionPageState.timeToAnswerPerQuestionController.text;
+    String nameOfQuiz = _NumOfQuestionPageState.nameOfQuizController.text;
+    String numOfQuestions =
+        _NumOfQuestionPageState.numOfQuestionsController.text;
+    String correctOptionIndex = correctOptionIndexController.text;
+    String question = questionController.text;
+    String answer1 = answer1Controller.text;
+    String answer2 = answer2Controller.text;
+    String answer3 = answer3Controller.text;
+    String answer4 = answer4Controller.text;
 
-        // Add the question and answer to the list
-        numOfQuestionsAdded+=1;
-        _databaseRef.child('Robophone/questions/test/quizzes/'+generatedPin+'/quizID').update({
-        'quizID': generatedPin,
-        });
-       _databaseRef.child('Robophone/questions/test/quizzes/'+generatedPin+'/questions/'+numOfQuestionsAdded.toString()).update({
-        'question': question,
-        'correctOptionIndex':correctOptionIndex,
-        'options': [answer1, answer2, answer3, answer4],
-        });
-        _databaseRef.child('Robophone/questions/test/quizzes/'+generatedPin+'/quizDetails').update({
-        'nameOfQuiz':nameOfQuiz,
-        'timeToAnswerPerQuestion':timeToAnswerPerQuestion,
-        'numOfQuestions': numOfQuestions,
-        });
-        // Clear the text fields
-          
-        correctOptionIndexController.clear();
-        questionController.clear();
-        answer1Controller.clear();
-        answer2Controller.clear();
-        answer3Controller.clear();
-        answer4Controller.clear();
+    // Add the question and answer to the list
+    numOfQuestionsAdded += 1;
+    _databaseRef
+        .child('Robophone/MahmoudTesting/quizzes/' + generatedPin + '/quizID')
+        .update({
+      'quizID': generatedPin,
+    });
+    _databaseRef
+        .child('Robophone/MahmoudTesting/quizzes/' +
+            generatedPin +
+            '/questions/' +
+            numOfQuestionsAdded.toString())
+        .update({
+      'question': question,
+      'correctOptionIndex': correctOptionIndex,
+      'options': [answer1, answer2, answer3, answer4],
+    });
+    _databaseRef
+        .child(
+            'Robophone/MahmoudTesting/quizzes/' + generatedPin + '/quizDetails')
+        .update({
+      'nameOfQuiz': nameOfQuiz,
+      'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
+      'numOfQuestions': numOfQuestions,
+    });
+    // Clear the text fields
+
+    correctOptionIndexController.clear();
+    questionController.clear();
+    answer1Controller.clear();
+    answer2Controller.clear();
+    answer3Controller.clear();
+    answer4Controller.clear();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -152,32 +168,35 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
               controller: answer1Controller,
               decoration: InputDecoration(labelText: 'Answer 1'),
             ),
-             TextField(
+            TextField(
               controller: answer2Controller,
               decoration: InputDecoration(labelText: 'Answer 2'),
             ),
-             TextField(
+            TextField(
               controller: answer3Controller,
               decoration: InputDecoration(labelText: 'Answer 3'),
             ),
-             TextField(
+            TextField(
               controller: answer4Controller,
               decoration: InputDecoration(labelText: 'Answer 4'),
             ),
-             TextField(
+            TextField(
               controller: correctOptionIndexController,
-              decoration: InputDecoration(labelText: 'please write the correct answer number'),
+              decoration: InputDecoration(
+                  labelText: 'please write the correct answer number'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 addQuizData();
-                 if (numOfQuestionsAdded >= int.parse(_NumOfQuestionPageState.numOfQuestionsController.text)) {
+                if (numOfQuestionsAdded >=
+                    int.parse(_NumOfQuestionPageState
+                        .numOfQuestionsController.text)) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => introPage()),
                   );
-                } 
+                }
               },
               child: Text('add Question'),
             ),
@@ -192,8 +211,8 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => introPage()),
+                  context,
+                  MaterialPageRoute(builder: (context) => introPage()),
                 );
               },
               child: Text('back to intro page'),
