@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'firebase_options.dart';
-import 'main.dart';
+import 'IntroPage.dart';
 
 class CreateQuizApp extends StatelessWidget {
   @override
@@ -21,9 +21,10 @@ class NumOfQuestionPage extends StatefulWidget {
   _NumOfQuestionPageState createState() => _NumOfQuestionPageState();
 }
 class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
-     final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
+  final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   static TextEditingController numOfQuestionsController = TextEditingController();
-
+  static TextEditingController timeToAnswerPerQuestionController = TextEditingController();
+  static TextEditingController nameOfQuizController=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,10 +36,17 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-         
-             TextField(
+            TextField(
+              controller: nameOfQuizController,
+              decoration: InputDecoration(labelText: 'Name of the quiz:'),
+            ),
+            TextField(
               controller: numOfQuestionsController,
-              decoration: InputDecoration(labelText: 'number of questions:'),
+              decoration: InputDecoration(labelText: 'Number of questions:'),
+            ),
+            TextField(
+              controller: timeToAnswerPerQuestionController,
+              decoration: InputDecoration(labelText: 'Time to answer:'),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
@@ -54,9 +62,10 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
         ),
       ),
     );
+  numOfQuestionsController.clear();
+  timeToAnswerPerQuestionController.clear();
+  nameOfQuizController.clear();
   }
-
-  
 }
 
 
@@ -78,6 +87,8 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
      List<Map<String, dynamic>> quizDataList = [];
         void addQuizData() {
         // TODO: add the name of the quiz 
+        String timeToAnswerPerQuestion=_NumOfQuestionPageState.timeToAnswerPerQuestionController.text;
+        String nameOfQuiz=_NumOfQuestionPageState.nameOfQuizController.text;
         String numOfQuestions=_NumOfQuestionPageState.numOfQuestionsController.text;
         String correctOptionIndex=correctOptionIndexController.text;
         String question = questionController.text;
@@ -88,11 +99,15 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 
         // Add the question and answer to the list
         numOfQuestionsAdded+=1;
-       _databaseRef.child('Robophone/questions/test/'+numOfQuestionsAdded.toString()).update({
+       _databaseRef.child('Robophone/questions/test/quizzes/quiz1/'+numOfQuestionsAdded.toString()).update({
         'question': question,
-         'numOfQuestions': numOfQuestions,
         'correctOptionIndex':correctOptionIndex,
         'options': [answer1, answer2, answer3, answer4],
+        });
+        _databaseRef.child('Robophone/questions/test/quizzes/quiz1').update({
+        'nameOfQuiz':nameOfQuiz,
+        'timeToAnswerPerQuestion':timeToAnswerPerQuestion,
+        'numOfQuestions': numOfQuestions,
         });
         // Clear the text fields
           
