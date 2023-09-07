@@ -1,18 +1,29 @@
-
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'CreateQuiz.dart';
 import 'GamePage.dart';
+import 'package:web_project/models/quiz.dart';
+import 'package:web_project/services/firebase_service.dart';
+import 'package:web_project/widgets/quiz_card.dart';
 
 class introPage extends StatefulWidget {
   @override
   _introPageState createState() => _introPageState();
 }
+
 class _introPageState extends State<introPage> {
-  final _databaseRef = FirebaseDatabase.instance.ref();
-  String dataFromFirebase = '';
+  List<Quiz> quizzes = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchQuizzes().then((fetchedQuizzes) {
+      setState(() {
+        quizzes = fetchedQuizzes;
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +31,7 @@ class _introPageState extends State<introPage> {
       appBar: AppBar(
         title: Text('Robophone Kahoot Game'),
         actions: [
-         ElevatedButton( // Change RaisedButton to ElevatedButton
+          ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
@@ -31,46 +42,31 @@ class _introPageState extends State<introPage> {
           ),
         ],
       ),
-    body: Center(
-    child: KahootWidget(),
-    
-    ),
-    );
-  }
-  
-}
-class KahootWidget extends StatefulWidget {
-  @override
-  _KahootWidgetState createState() => _KahootWidgetState();
-}
-
-class _KahootWidgetState extends State<KahootWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Kahoot',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 40), // Add some spacing below the text
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                 Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => GamePage()),
-                    );
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: quizzes.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    QuizCard(quiz: quizzes[index]),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                GamePage(quiz: quizzes[index]),
+                          ),
+                        );
+                      },
+                      child: Text('Start Game'),
+                    ),
+                    SizedBox(height: 10.0), // Add some space between cards
+                  ],
+                );
               },
-              child: Text('Start Game'),
             ),
-            SizedBox(width: 20), // Add spacing between buttons
-          ],
-        ),
-      ],
     );
   }
 }
