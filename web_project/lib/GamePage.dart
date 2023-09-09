@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'dart:async'; // needed for Timer
 
 class GamePage extends StatefulWidget {
   final Quiz quiz;
@@ -15,13 +16,20 @@ class _GamePageState extends State<GamePage> {
   final _databaseRef = FirebaseDatabase.instance.ref();
   String _questionText = '';
   List<String> _answers = [];
-  int _currentQuestionIndex =
-      -1; // Initial value set to -1 to show quiz details first
+  int _currentQuestionIndex = -1;
+  int _countdownTime = 5; // assuming countdown is for 5 seconds
+  Timer? _countdownTimer; // a timer for countdown
 
   @override
   void initState() {
     super.initState();
     print(widget.quiz.quizDetails.nameOfQuiz);
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -50,7 +58,7 @@ class _GamePageState extends State<GamePage> {
             'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds'),
         SizedBox(height: 16.0),
         ElevatedButton(
-          onPressed: _showNextQuestion,
+          onPressed: _startCountdown,
           child: Text('Start Game'),
         ),
       ],
@@ -61,20 +69,45 @@ class _GamePageState extends State<GamePage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(_questionText),
-        for (var answer in _answers) Text(answer),
-        ElevatedButton(
-          onPressed: _showNextQuestion,
-          child: Text("Show Next Question"),
-        ),
+        _countdownTime > 0
+            ? Text('Starting in: $_countdownTime seconds')
+            : Column(
+                children: [
+                  Text(_questionText),
+                  for (var answer in _answers) Text(answer),
+                  SizedBox(
+                      height: 20.0), // adding a little space for visual appeal
+                  ElevatedButton(
+                    onPressed: _showNextQuestion,
+                    child: Text("Show Next Question"),
+                  ),
+                ],
+              ),
       ],
     );
   }
 
-  void _showNextQuestion() async {
-    // 1. Update the local state for the next question
+  void _startCountdown() {
     setState(() {
       _currentQuestionIndex += 1;
+    });
+
+    _countdownTime = 5; // reset countdown time to 5 seconds
+
+    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_countdownTime > 0) {
+          _countdownTime--;
+        } else {
+          timer.cancel();
+          _showNextQuestion();
+        }
+      });
+    });
+  }
+
+  void _showNextQuestion() async {
+    setState(() {
       if (_currentQuestionIndex < widget.quiz.questions.length) {
         _questionText = widget.quiz.questions[_currentQuestionIndex].questionID;
         _answers = widget.quiz.questions[_currentQuestionIndex].options;
@@ -84,7 +117,6 @@ class _GamePageState extends State<GamePage> {
       }
     });
 
-    // 2. Prepare the data for Firebase update
     DateTime questionTime = DateTime.now().add(Duration(seconds: 5));
     String nextQuestionTime =
         "${questionTime.hour}:${questionTime.minute}:${questionTime.second}";
@@ -97,7 +129,6 @@ class _GamePageState extends State<GamePage> {
       "currentQuestion": _currentQuestionIndex
     };
 
-    // 3. Update Firebase with the new data
     await _databaseRef
         .child('MahmoudTesting/quizzes/${widget.quiz.quizID}')
         .update(updateData);
