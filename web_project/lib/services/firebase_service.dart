@@ -35,3 +35,26 @@ Future<List<Quiz>> fetchQuizzes() async {
     return Future.error('Failed to load quizzes');
   }
 }
+
+Future<Quiz?> fetchQuizByID(String quizID) async {
+  final _databaseRef = FirebaseDatabase.instance.ref();
+
+  try {
+    DatabaseEvent event =
+        await _databaseRef.child('MahmoudTesting/quizzes/$quizID').once();
+    DataSnapshot dataSnapshot = event.snapshot;
+
+    if (dataSnapshot.value != null && dataSnapshot.value is Map) {
+      try {
+        return Quiz.fromMap(dataSnapshot.value as Map<String, dynamic>);
+      } catch (e) {
+        print('Error parsing quiz: $e');
+        return null;
+      }
+    }
+    return null;
+  } catch (e) {
+    print('Error fetching quiz: $e');
+    return Future.error('Failed to load the quiz');
+  }
+}
