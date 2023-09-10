@@ -24,18 +24,18 @@ class QuizDetailsPage extends StatelessWidget {
             Text(
                 'Time per Question: ${quiz.quizDetails.timeToAnswerPerQuestion} seconds'),
             SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        GamePage(quiz: quiz), // Passing the quiz to GamePage
-                  ),
-                );
-              },
-              child: Text('Start Game'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) =>
+            //             GamePage(quiz: quiz), // Passing the quiz to GamePage
+            //       ),
+            //     );
+            //   },
+            //   child: Text('Start Game'),
+            // ),
           ],
         ),
       ),
