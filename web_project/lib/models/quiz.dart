@@ -28,26 +28,6 @@ class Quiz {
     return sortedPlayers.take(x).toList();
   }
 
-  // List<int> getHistogramForQuestion(String questionID) {
-  //   // Question? targetQuestion = questions.firstWhere((q) => q.questionID == questionID, orElse: () => null);
-  //   Question targetQuestion = questions
-  //       .firstWhere((q) => q.questionID == questionID, orElse: () => absent);
-
-  //   if (targetQuestion == null) return [];
-
-  //   List<int> histogram = List.filled(targetQuestion.options.length, 0);
-
-  //   for (var player in players) {
-  //     for (var answer in player.answers) {
-  //       if (answer.answer < histogram.length) {
-  //         histogram[answer.answer]++;
-  //       }
-  //     }
-  //   }
-
-  //   return histogram;
-  // }
-
   double getAverageScore() {
     int total = players.fold(0, (sum, player) => sum + player.getScore());
     return players.isEmpty ? 0.0 : total / players.length;
@@ -114,35 +94,13 @@ class Quiz {
           [],
     );
   }
-
-  // factory Quiz.fromMap(Map<String, dynamic> map) {
-  //   return Quiz(
-  //     quizID: map['quizID']['quizID'] ?? '',
-  //     questions: (map['questions'] as List)
-  //         .where((q) =>
-  //             q != null &&
-  //             q is Map<String, dynamic>) // Filtering out null or non-map values
-  //         .map((q) => Question.fromMap(q as Map<String, dynamic>))
-  //         .toList(),
-  //     quizDetails: QuizDetails.fromMap(map['quizDetails']),
-  //     players: (map['players'] as Map<String, dynamic>?)
-  //             ?.values
-  //             .where((p) =>
-  //                 p != null &&
-  //                 p is Map<String,
-  //                     dynamic>) // Filtering out null or non-map values
-  //             .map((p) => Player.fromMap(p as Map<String, dynamic>))
-  //             .toList() ??
-  //         [],
-  //   );
-  // }
 }
 
 class Question {
   final String correctOptionIndex;
   final List<String> options;
-  final int questionID; // Adjusted the type to int
-  final String questionText; // Added this to store the actual question text
+  final int questionID;
+  final String questionText;
 
   Question({
     required this.correctOptionIndex,
@@ -236,17 +194,17 @@ class Player {
 class Answer {
   final int answer;
   final int diffTime;
-  final int questionID; // Add this line
+  final int questionID;
 
   Answer({
     required this.answer,
     required this.diffTime,
-    required this.questionID, // And this line
+    required this.questionID,
   });
 
   @override
   String toString() {
-    return 'Answer(answer: $answer, diffTime: $diffTime, questionID: $questionID)'; // And modify this line
+    return 'Answer(answer: $answer, diffTime: $diffTime, questionID: $questionID)';
   }
 
   factory Answer.fromMap(int questionID, Map<String, dynamic> map) {
@@ -254,7 +212,7 @@ class Answer {
     return Answer(
       answer: map['answer'] ?? 0,
       diffTime: map['diffTime'] ?? 0,
-      questionID: questionID, // And this line
+      questionID: questionID,
     );
   }
 }
