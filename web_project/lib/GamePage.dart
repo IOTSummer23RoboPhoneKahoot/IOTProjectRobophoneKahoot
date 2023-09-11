@@ -150,7 +150,7 @@ class _GamePageState extends State<GamePage> {
 
   void _showNextQuestion() async {
     if (_currentQuestionIndex < widget.quiz.questions.length) {
-      _questionText = widget.quiz.questions[_currentQuestionIndex].questionID;
+      _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
       _answers = widget.quiz.questions[_currentQuestionIndex].options;
     } else {
       _questionText = "Quiz completed!";
@@ -170,7 +170,7 @@ class _GamePageState extends State<GamePage> {
     };
 
     await _databaseRef
-        .child('MahmoudTesting/quizzes/${widget.quiz.quizID}')
+        .child('Robophone/quizzes/${widget.quiz.quizID}')
         .update(updateData);
   }
 }
