@@ -2,11 +2,13 @@ class Quiz {
   final String quizID;
   final List<Question> questions;
   final QuizDetails quizDetails;
+  //final List<Player> players;
 
   Quiz({
     required this.quizID,
     required this.questions,
     required this.quizDetails,
+    //   required this.players,
   });
 
   factory Quiz.fromMap(Map<String, dynamic> map) {
@@ -19,6 +21,7 @@ class Quiz {
           .map((q) => Question.fromMap(q as Map<String, dynamic>))
           .toList(),
       quizDetails: QuizDetails.fromMap(map['quizDetails']),
+      //players: [],
     );
   }
 }
@@ -42,6 +45,38 @@ class Question {
     );
   }
 }
+
+// class eachQuestionAnswer {
+//   final String answerTime;
+//   final int diffTime;
+//   final int answer;
+// }
+
+// class playerQuestions {
+//   List<eachQuestionAnswer> QuestionNumber;
+//   playerQuestions({
+//     required this.QuestionNumber,
+//   });
+// }
+
+// class Player {
+//   final String username;
+//   final int score;
+//   final List<playerQuestions> questions;
+
+//   factory Player.fromMap(Map<String, dynamic> map) {
+//     return Player(
+//       username: map['username'] ?? '',
+//       score: map['score'],
+//       questions: List<playerQuestions>.from(map['questions'] ?? []),
+//     );
+//   }
+//   Player({
+//     required this.username,
+//     required this.score,
+//     required this.questions,
+//   });
+// }
 
 class QuizDetails {
   final String nameOfQuiz;

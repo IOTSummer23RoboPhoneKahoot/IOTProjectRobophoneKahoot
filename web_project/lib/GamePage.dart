@@ -17,7 +17,7 @@ class _GamePageState extends State<GamePage> {
   String _questionText = '';
   List<String> _answers = [];
   int _currentQuestionIndex = -1;
-  int _countdownTime = 5;
+  int _countdownTime = 60;
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
@@ -157,7 +157,7 @@ class _GamePageState extends State<GamePage> {
       _answers = [];
     }
 
-    DateTime questionTime = DateTime.now().add(Duration(seconds: 5));
+    DateTime questionTime = DateTime.now().add(Duration(seconds: 60));
     String nextQuestionTime =
         "${questionTime.hour}:${questionTime.minute}:${questionTime.second}";
 
@@ -170,7 +170,7 @@ class _GamePageState extends State<GamePage> {
     };
 
     await _databaseRef
-        .child('MahmoudTesting/quizzes/${widget.quiz.quizID}')
+        .child('Robophone/quizzes/${widget.quiz.quizID}')
         .update(updateData);
   }
 }
