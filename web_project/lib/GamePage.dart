@@ -108,18 +108,18 @@ class _GamePageState extends State<GamePage> {
     setState(() {
       _questionDuration =
           int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-    });
-    setState(() {
       _currentQuestionIndex += 1;
     });
+
     _countdownTime = 5;
+    _showNextQuestion();
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdownTime > 0) {
           _countdownTime--;
-          if (_countdownTime == 2) {
-            _showNextQuestion();
-          }
+          // if (_countdownTime == 2) {
+
+          // }
         } else {
           timer.cancel();
 
@@ -149,12 +149,20 @@ class _GamePageState extends State<GamePage> {
   }
 
   void _showNextQuestion() async {
-    if (_currentQuestionIndex < widget.quiz.questions.length) {
+    print('THE CURRENT QUESTION IS' + _currentQuestionIndex.toString());
+    print('THE NUMBER OF  QUESTION IS' +
+        widget.quiz.quizDetails.numOfQuestions.toString());
+    if (_currentQuestionIndex <
+        int.parse(widget.quiz.quizDetails.numOfQuestions)) {
       _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
       _answers = widget.quiz.questions[_currentQuestionIndex].options;
     } else {
+      print('GOT THE ELSE');
       _questionText = "Quiz completed!";
       _answers = [];
+      //TODO: here we got to the end of the quiz so we want to update the state
+      //to be end of the game and will show the summary widget,
+      // we could add a flag that give us indication for that.
     }
 
     DateTime questionTime = DateTime.now().add(Duration(seconds: 5));
@@ -183,7 +191,7 @@ class QuestionAndAnswers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (questionText.isEmpty || answers.isEmpty) {
+    if (questionText.isEmpty) {
       return Text('Waiting for question...');
     }
 
