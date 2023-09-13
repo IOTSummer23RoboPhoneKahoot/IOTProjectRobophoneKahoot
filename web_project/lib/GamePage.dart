@@ -4,6 +4,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
 import 'package:web_project/widgets/playersjoinWidget.dart';
 import 'package:web_project/widgets/TopScoreWidget.dart';
+import 'package:web_project/widgets/fastestPlayerWidget.dart';
+import 'package:web_project/widgets/correctEachQuestionWidget.dart';
 
 class GamePage extends StatefulWidget {
   final Quiz quiz;
@@ -19,11 +21,11 @@ class _GamePageState extends State<GamePage> {
   String _questionText = '';
   List<String> _answers = [];
   int _currentQuestionIndex = -1;
-  int _countdownTime = 5;
+  int _countdownTime = 2;
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
-  // bool showQuestionStats = false;
+  bool _quizCompleted = false; // Track quiz completion
 
   @override
   void initState() {
@@ -47,9 +49,11 @@ class _GamePageState extends State<GamePage> {
         title: Text('Robophone Kahoot Game'),
       ),
       body: Center(
-        child: _currentQuestionIndex == -1
-            ? _buildQuizDetails()
-            : _buildQuestionView(),
+        child: _quizCompleted
+            ? _buildQuizCompletedView()
+            : _currentQuestionIndex == -1
+                ? _buildQuizDetails()
+                : _buildQuestionView(),
       ),
     );
   }
@@ -76,16 +80,17 @@ class _GamePageState extends State<GamePage> {
         Text(
           'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds',
         ),
+        Text(
+          'QuizPIN: ${widget.quiz.quizID}',
+        ),
         SizedBox(height: 10.0),
-        //HighestScoreWidget(quiz: widget.quiz),
         ElevatedButton(
           onPressed: _startCountdown,
           child: Text('Start Game'),
         ),
         ElevatedButton(
-          // Add this button
           onPressed: _joinPlayers,
-          child: Text('Join Players' + widget.quiz.quizID),
+          child: Text('Join Players'),
         ),
       ],
     );
@@ -114,12 +119,13 @@ class _GamePageState extends State<GamePage> {
                 ],
               ),
         SizedBox(height: 20.0),
-        _questionDuration == 0
-            ? ElevatedButton(
-                onPressed: _startCountdown,
-                child: Text("Show Next Question"),
-              )
-            : Container(),
+        if (!_quizCompleted) // Display "Show Next Question" button conditionally
+          _questionDuration == 0
+              ? ElevatedButton(
+                  onPressed: _startCountdown,
+                  child: Text("Show Next Question"),
+                )
+              : Container(),
       ],
     );
   }
@@ -128,24 +134,21 @@ class _GamePageState extends State<GamePage> {
     setState(() {
       _questionDuration =
           int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
+      _currentQuestionIndex += 1;
     });
-    _currentQuestionIndex += 1;
-    //setState(() {});
-    _countdownTime = 5;
+
+    _countdownTime = 2;
+    _showNextQuestion();
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdownTime > 0) {
           _countdownTime--;
-          if (_countdownTime == 1) {
-            _showNextQuestion();
-          }
         } else {
           timer.cancel();
 
           _startQuestionTimer();
         }
       });
-      // Update the UI.
     });
   }
 
@@ -153,8 +156,6 @@ class _GamePageState extends State<GamePage> {
     if (_questionTimer != null) {
       _questionTimer!.cancel();
     }
-    // _questionDuration =
-    //     int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
 
     _questionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
@@ -168,12 +169,16 @@ class _GamePageState extends State<GamePage> {
   }
 
   void _showNextQuestion() async {
-    if (_currentQuestionIndex + 1 <= widget.quiz.questions.length) {
+    if (_currentQuestionIndex <
+        int.parse(widget.quiz.quizDetails.numOfQuestions)) {
       _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
       _answers = widget.quiz.questions[_currentQuestionIndex].options;
     } else {
       _questionText = "Quiz completed!";
       _answers = [];
+      setState(() {
+        _quizCompleted = true;
+      });
     }
 
     DateTime questionTime = DateTime.now().add(Duration(seconds: 5));
@@ -191,6 +196,44 @@ class _GamePageState extends State<GamePage> {
     await _databaseRef
         .child('Robophone/quizzes/${widget.quiz.quizID}')
         .update(updateData);
+  }
+
+  Widget _buildQuizCompletedView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Quiz Completed',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        ElevatedButton(
+          onPressed: _endGame,
+          child: Text("End Game"),
+        ),
+      ],
+    );
+  }
+
+  void _endGame() {
+    // Navigate to the HighestScorePage with the quiz object
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HighestScoreWidget(quiz: widget.quiz),
+      ),
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FastestPlayerWidget(quiz: widget.quiz),
+      ),
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CorrectAnswersWidget(quiz: widget.quiz),
+      ),
+    );
   }
 }
 
@@ -242,8 +285,6 @@ class QuestionStats extends StatelessWidget {
           'Quiz ID: ${quiz.quizID}',
           style: TextStyle(fontSize: 18),
         ),
-        // You can expand this section with more stats about the question.
-        // For example, how many players answered correctly, etc.
       ],
     );
   }
