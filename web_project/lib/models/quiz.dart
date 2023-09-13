@@ -22,6 +22,59 @@ class Quiz {
     return 'Quiz(quizID: $quizID, questions: $questions, quizDetails: $quizDetails, players: $players)';
   }
 
+  double getPlayerAverageResponseTime(String username) {
+    Player? player = players.firstWhere(
+      (p) => p.username == username,
+      orElse: () => Player(
+        username: '',
+        answers: [],
+        learn: 0,
+        rate: 0,
+        score: 0,
+      ),
+    );
+    if (player.answers.isEmpty) {
+      return 0.0; // Return 0 if the player has no answers
+    }
+    int totalResponseTime =
+        player.answers.fold(0, (sum, answer) => sum + answer.diffTime);
+    return totalResponseTime / player.answers.length;
+  }
+
+  List<Player> getTopPlayersByResponseTime(int x) {
+    List<Player> sortedPlayers = List.from(players);
+
+    // Sort players by total response time sum (ascending order)
+    sortedPlayers.sort((a, b) {
+      int totalResponseTimeSumA = a.getTotalResponseTimeSum();
+      int totalResponseTimeSumB = b.getTotalResponseTimeSum();
+      return totalResponseTimeSumA.compareTo(totalResponseTimeSumB);
+    });
+
+    // Return the top X players based on total response time sum
+    return sortedPlayers.take(x).toList();
+  }
+
+  Map<String, int> getQuestionCorrectAnswerCountMap() {
+    Map<String, int> correctAnswerCountMap = {};
+    for (Question question in questions) {
+      int correctAnswer = getCorrectAnswerIndex(question.questionID);
+      int count = 0;
+      for (Player player in players) {
+        Answer? answerForQuestion = player.answers.firstWhere(
+          (a) => a.questionID == question.questionID,
+          orElse: () => Answer(answer: -1, diffTime: -1, questionID: -1),
+        );
+        if (answerForQuestion.answer != -1 &&
+            answerForQuestion.answer == correctAnswer) {
+          count++;
+        }
+      }
+      correctAnswerCountMap[question.questionText] = count;
+    }
+    return correctAnswerCountMap;
+  }
+
   List<Player> getTopPlayers(int x) {
     List<Player> sortedPlayers = List.from(players);
     sortedPlayers.sort((a, b) => b.getScore().compareTo(a.getScore()));
@@ -41,6 +94,19 @@ class Quiz {
         targetQuestion.options[int.parse(targetQuestion.correctOptionIndex)];
 
     return correctAnswer;
+  }
+
+  int getCorrectAnswerIndex(int questionID) {
+    int correctAnswerIndex;
+    Question? targetQuestion = questions.firstWhere(
+        (q) => q.questionID == questionID,
+        orElse: () => Question(
+            correctOptionIndex: '-1',
+            options: [],
+            questionID: -1,
+            questionText: "dummey"));
+    correctAnswerIndex = int.parse(targetQuestion.correctOptionIndex);
+    return correctAnswerIndex;
   }
 
   double getAverageScore() {
@@ -203,6 +269,16 @@ class Player {
       rate: map['rate'] ?? 0,
       score: map['score'] ?? 0,
     );
+  }
+  int getTotalResponseTimeSum() {
+    if (answers.isEmpty) {
+      return 0; // Return 0 if the player has no answers
+    }
+
+    int totalResponseTime =
+        answers.fold(0, (sum, answer) => sum + answer.diffTime);
+
+    return totalResponseTime;
   }
 }
 

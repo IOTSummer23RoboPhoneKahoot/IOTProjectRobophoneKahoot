@@ -19,7 +19,7 @@ class _GamePageState extends State<GamePage> {
   String _questionText = '';
   List<String> _answers = [];
   int _currentQuestionIndex = -1;
-  int _countdownTime = 5;
+  int _countdownTime = 2;
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
@@ -27,15 +27,17 @@ class _GamePageState extends State<GamePage> {
   List<Player>? chart1 = [];
   Map<String, int>? chart2 = {};
   String? correctAnswer = '';
+  bool is_game_finished = false;
   @override
   void initState() {
     super.initState();
-    _questionDuration =
-        int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-    listenOnQuizByID(widget.quiz.quizID.toString()).listen((fetchedQuiz) {
+
+    fetchQuizByID(widget.quiz.quizID.toString()).then((fetchedQuiz) {
       setState(() {
         quiz = fetchedQuiz;
         chart1 = quiz?.getTopPlayers(3);
+        _questionDuration =
+            int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion) - 1;
       });
     });
   }
@@ -108,31 +110,33 @@ class _GamePageState extends State<GamePage> {
         SizedBox(height: 20.0),
         _questionDuration == 0
             ? ElevatedButton(
-                onPressed: _startCountdown,
-                child: Text("Show Next Question"),
+                onPressed: is_game_finished == false
+                    ? _startCountdown
+                    : _startCountdown,
+                child: is_game_finished == false
+                    ? Text("Show Next Question")
+                    : Text("Show Game Summary"),
               )
             : Container(),
       ],
     );
   }
 
-  void _startCountdown() {
+  void _startCountdown() async {
     setState(() {
-      _questionDuration =
-          int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
+      // _questionDuration =
+      //     int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
       _currentQuestionIndex += 1;
     });
 
-    _countdownTime = 5;
-    _showNextQuestion();
+    await _showNextQuestion();
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdownTime > 0) {
           _countdownTime--;
         } else {
-          timer.cancel();
-
           _startQuestionTimer();
+          timer.cancel();
         }
       });
       // Update the UI.
@@ -140,40 +144,51 @@ class _GamePageState extends State<GamePage> {
   }
 
   void _startQuestionTimer() {
-    if (_questionTimer != null) {
-      _questionTimer!.cancel();
-    }
     _questionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_questionDuration > 0) {
           _questionDuration--;
         } else {
           timer.cancel();
+          fetchQuizByID(widget.quiz.quizID.toString()).then((fetchedQuiz) {
+            setState(() {
+              quiz = fetchedQuiz;
+              chart1 = quiz?.getTopPlayers(3);
+            });
+          });
         }
       });
     });
   }
 
-  void _showNextQuestion() async {
+  Future _showNextQuestion() async {
     print('THE CURRENT QUESTION IS' + _currentQuestionIndex.toString());
     print('THE NUMBER OF  QUESTION IS' +
         widget.quiz.quizDetails.numOfQuestions.toString());
-    // updtae correct answer
-    correctAnswer = quiz?.getCorrectAnswer(_currentQuestionIndex + 1);
-    // update the questions chart
-    chart2 = quiz?.getHistogramForQuestion(_currentQuestionIndex + 1);
     if (_currentQuestionIndex <
         int.parse(widget.quiz.quizDetails.numOfQuestions)) {
       _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
       _answers = widget.quiz.questions[_currentQuestionIndex].options;
-    } else {
-      print('GOT THE ELSE');
-      _questionText = "Quiz completed!";
-      _answers = [];
-      //TODO: here we got to the end of the quiz so we want to update the state
-      //to be end of the game and will show the summary widget,
-      // we could add a flag that give us indication for that.
+      // updtae correct answer
+      correctAnswer = quiz?.getCorrectAnswer(_currentQuestionIndex + 1);
+      // update the questions chart
+      chart2 = quiz?.getHistogramForQuestion(_currentQuestionIndex + 1);
     }
+    if (_currentQuestionIndex + 1 ==
+        int.parse(widget.quiz.quizDetails.numOfQuestions)) {
+      // this is the last question so we need to update the flag to go to game summary
+      setState(() {
+        is_game_finished = true;
+      });
+    }
+    // } else {
+    //   print('GOT THE ELSE');
+    //   _questionText = "Quiz completed!";
+    //   _answers = [];
+    //   //TODO: here we got to the end of the quiz so we want to update the state
+    //   //to be end of the game and will show the summary widget,
+    //   // we could add a flag that give us indication for that.
+    // }
 
     DateTime questionTime = DateTime.now().add(Duration(seconds: 5));
     String nextQuestionTime =
