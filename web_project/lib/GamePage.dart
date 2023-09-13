@@ -37,7 +37,10 @@ class _GamePageState extends State<GamePage> {
       setState(() {
         quiz = fetchedQuiz;
         chart1 = quiz?.getTopPlayers(3);
-        chart2 = quiz?.getHistogramForQuestion(_currentQuestionIndex);
+        // chart2 = quiz?.getHistogramForQuestion(3);
+        // print(_currentQuestionIndex + 2);
+        // print('chart2');
+        // print(chart2);
       });
     });
   }
@@ -159,6 +162,7 @@ class _GamePageState extends State<GamePage> {
     print('THE CURRENT QUESTION IS' + _currentQuestionIndex.toString());
     print('THE NUMBER OF  QUESTION IS' +
         widget.quiz.quizDetails.numOfQuestions.toString());
+    chart2 = quiz?.getHistogramForQuestion(_currentQuestionIndex + 1);
     if (_currentQuestionIndex <
         int.parse(widget.quiz.quizDetails.numOfQuestions)) {
       _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
