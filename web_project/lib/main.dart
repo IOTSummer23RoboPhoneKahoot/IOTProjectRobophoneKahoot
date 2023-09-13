@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'IntroPage.dart';
+import 'package:web_project/widgets/TopScoreWidget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +20,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home:  introPage(),
+      home: introPage(),
+      //home: HighestScoreWidget(),
     );
   }
 }

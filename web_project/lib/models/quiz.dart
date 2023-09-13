@@ -29,7 +29,7 @@ class Quiz {
   }
 
   double getAverageScore() {
-    int total = players.fold(0, (sum, player) => sum + player.getScore());
+    double total = players.fold(0, (sum, player) => sum + player.getScore());
     return players.isEmpty ? 0.0 : total / players.length;
   }
 
@@ -154,7 +154,7 @@ class Player {
   final List<Answer> answers;
   final int learn;
   final int rate;
-  final int score;
+  final double score;
 
   Player({
     required this.username,
@@ -168,7 +168,7 @@ class Player {
     return 'Player(username: $username, answers: $answers, learn: $learn, rate: $rate, score: $score)';
   }
 
-  int getScore() {
+  double getScore() {
     return score;
   }
 

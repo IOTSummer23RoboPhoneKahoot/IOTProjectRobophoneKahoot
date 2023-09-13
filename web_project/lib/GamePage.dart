@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
+import 'package:web_project/widgets/playersjoinWidget.dart';
+import 'package:web_project/widgets/TopScoreWidget.dart';
 
 class GamePage extends StatefulWidget {
   final Quiz quiz;
@@ -52,20 +54,38 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
+  void _joinPlayers() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlayerListScreen(quiz: widget.quiz),
+      ),
+    );
+  }
+
   Widget _buildQuizDetails() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(widget.quiz.quizDetails.nameOfQuiz,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(
+          widget.quiz.quizDetails.nameOfQuiz,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         SizedBox(height: 8.0),
         Text('Number of Questions: ${widget.quiz.quizDetails.numOfQuestions}'),
         Text(
-            'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds'),
-        SizedBox(height: 16.0),
+          'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds',
+        ),
+        SizedBox(height: 10.0),
+        //HighestScoreWidget(quiz: widget.quiz),
         ElevatedButton(
           onPressed: _startCountdown,
           child: Text('Start Game'),
+        ),
+        ElevatedButton(
+          // Add this button
+          onPressed: _joinPlayers,
+          child: Text('Join Players' + widget.quiz.quizID),
         ),
       ],
     );
@@ -109,15 +129,14 @@ class _GamePageState extends State<GamePage> {
       _questionDuration =
           int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
     });
-    setState(() {
-      _currentQuestionIndex += 1;
-    });
+    _currentQuestionIndex += 1;
+    //setState(() {});
     _countdownTime = 5;
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdownTime > 0) {
           _countdownTime--;
-          if (_countdownTime == 2) {
+          if (_countdownTime == 1) {
             _showNextQuestion();
           }
         } else {
@@ -149,7 +168,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   void _showNextQuestion() async {
-    if (_currentQuestionIndex < widget.quiz.questions.length) {
+    if (_currentQuestionIndex + 1 <= widget.quiz.questions.length) {
       _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
       _answers = widget.quiz.questions[_currentQuestionIndex].options;
     } else {
@@ -183,7 +202,7 @@ class QuestionAndAnswers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (questionText.isEmpty || answers.isEmpty) {
+    if (questionText.isEmpty) {
       return Text('Waiting for question...');
     }
 
