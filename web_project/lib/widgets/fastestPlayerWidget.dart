@@ -1,39 +1,67 @@
 import 'package:flutter/material.dart';
-
-class Player {
-  final String name;
-  final int diffTime;
-
-  Player(this.name, this.diffTime);
-}
+import 'package:web_project/models/quiz.dart';
+import 'package:web_project/services/firebase_service.dart';
 
 class FastestPlayerWidget extends StatefulWidget {
+  final Quiz quiz;
+
+  FastestPlayerWidget({required this.quiz});
   @override
   _FastestPlayerWidgetState createState() => _FastestPlayerWidgetState();
 }
 
 class _FastestPlayerWidgetState extends State<FastestPlayerWidget> {
-  List<Player> players = [
-    Player('Player 1', 5),
-    Player('Player 2', 8),
-    Player('Player 3', 7),
-    Player('Player 4', 9),
-  ];
-
-  Player fastestPlayer = Player('None', 0);
-
-  void findFastestPlayer() {
-    for (final player in players) {
-      if (player.diffTime > fastestPlayer.diffTime) {
-        fastestPlayer = player;
-      }
-    }
-  }
-
+  List<Player> players = [];
+  Quiz quiz1 = Quiz(
+    quizID: '',
+    questions: [],
+    quizDetails: QuizDetails(
+      nameOfQuiz: '',
+      numOfQuestions: '',
+      timeToAnswerPerQuestion: '',
+    ),
+    players: [],
+  );
+  Player fastestPlayer = Player(
+      username: '',
+      answers: [],
+      learn: 0,
+      rate: 0,
+      score: 0); // Declare the fastestPlayer here
+  String username = '';
+  double totalDiffTime = 0.0;
   @override
   void initState() {
     super.initState();
-    findFastestPlayer();
+
+    listenOnQuizByID(widget.quiz.quizID).listen((fetchedQuiz) {
+      if (fetchedQuiz != null) {
+        setState(() {
+          quiz1 = fetchedQuiz;
+          players = fetchedQuiz.players;
+        });
+        totalDiffTime = double.parse(quiz1.quizDetails.numOfQuestions) *
+            double.parse(quiz1.quizDetails.timeToAnswerPerQuestion);
+        if (players.isNotEmpty) {
+          for (final player in players) {
+            double PlayerDiffTime = totalDiffTime;
+            for (final answer in player.answers) {
+              PlayerDiffTime += answer.diffTime.toDouble();
+            }
+            if (totalDiffTime > PlayerDiffTime) {
+              // fastestPlayer.username = player.username;
+              username = player.username;
+              totalDiffTime = PlayerDiffTime;
+            }
+          }
+          print(
+              '****************************************************************');
+          print(username);
+        }
+      } else {
+        // Handle the case where there was an error or no data was found
+      }
+    });
   }
 
   @override
@@ -54,13 +82,19 @@ class _FastestPlayerWidgetState extends State<FastestPlayerWidget> {
                 child: Column(
                   children: [
                     Text(
-                      'Fastest Player: ' + fastestPlayer.name,
+                      'Fastest Player: ' + fastestPlayer.username,
+                      // (fastestPlayer != null
+                      //     ? fastestPlayer.username
+                      //     : 'N/A'),
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 8.0),
                     Text(
-                      'Score: ' + fastestPlayer.diffTime.toString(),
+                      'diffTime: ' + totalDiffTime.toString(),
+                      // (fastestPlayer != null
+                      //     ? totalDiffTime.toString()
+                      //     : 'N/A'),
                       style: TextStyle(fontSize: 24),
                     ),
                   ],

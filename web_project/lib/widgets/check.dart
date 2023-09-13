@@ -325,3 +325,133 @@ class _PlayerListScreenState extends State<PlayerListScreen> {
     );
   }
 }
+
+
+Future<List<Player>> fetchPlayers() async {
+  final _databaseRef = FirebaseDatabase.instance.ref();
+
+  try {
+    DatabaseEvent event = await _databaseRef
+        .child('Robophone/quizzes/${widget.quiz.quizID}/players')
+        .once();
+    DataSnapshot dataSnapshot = event.snapshot;
+
+    if (dataSnapshot.value != null && dataSnapshot.value is Map) {
+      List<Player> players = [];
+      Map<String, dynamic> playersMap = dataSnapshot.value as Map<String, dynamic>;
+
+      playersMap.forEach((key, value) {
+        if (value != null && value is Map) {
+          try {
+            // Create a Player object from the Firebase data
+            Player player = Player.fromMap(value as Map<String, dynamic>);
+            
+            // Compute the diffTime for this player based on their question IDs
+            double totalDiffTime = 0.0;
+            for (String questionID in player.questions.keys) {
+              // Access the diffTime under the question ID and add it to the total
+              totalDiffTime += (player.questions[questionID]['diffTime'] as double);
+            }
+            
+            // Set the computed totalDiffTime to the player
+            player.totalDiffTime = totalDiffTime;
+
+            players.add(player);
+          } catch (e) {
+            print('Error parsing player: $e');
+          }
+        }
+      });
+
+      return players;
+    }
+
+    return [];
+  } catch (e) {
+    print('Error fetching players: $e');
+    return Future.error('Failed to load players');
+  }
+}
+
+
+import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+class YourWidget extends StatelessWidget {
+  final highestScore = 100; // Replace with the actual highest score
+  final List<Player> topPlayers = quiz1.getTopPlayers(3); // Replace with the actual top players
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Your Page Title'),
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(16.0),
+        children: [
+          Card(
+            elevation: 2.0,
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Highest Score:',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    highestScore.toString(),
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            elevation: 2.0,
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'TOP 3 WINNERS:',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  // Add your chart of the top 3 winners here
+                  Container(
+                    height: 300, // Adjust the height as needed
+                    child: SfCartesianChart(
+                      primaryXAxis: CategoryAxis(),
+                      series: <ChartSeries>[
+                        ColumnSeries<Player, String>(
+                          dataSource: topPlayers,
+                          xValueMapper: (Player player, _) => player.name,
+                          yValueMapper: (Player player, _) => player.score,
+                          dataLabelSettings: DataLabelSettings(isVisible: true),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
