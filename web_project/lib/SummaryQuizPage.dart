@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'CreateQuiz.dart';
 import 'IntroPage.dart';
-import 'package:web_project/models/quiz.dart';
-import 'package:web_project/services/firebase_service.dart';
-import 'package:web_project/widgets/quiz_card.dart';
 
 class summaryPage extends StatefulWidget {
   @override
@@ -11,8 +8,6 @@ class summaryPage extends StatefulWidget {
 }
 
 class _summaryPageState extends State<summaryPage> {
- 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,24 +25,24 @@ class _summaryPageState extends State<summaryPage> {
           ),
         ],
       ),
-      body:Center ( 
-        child:Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-        Text('Admin,you created your Quiz succesfully!'),
-        SizedBox(height: 40.0), 
-        ElevatedButton(
-            onPressed: () {
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Admin,you created your Quiz succesfully!'),
+            SizedBox(height: 40.0),
+            ElevatedButton(
+              onPressed: () {
                 Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => introPage()),
+                  context,
+                  MaterialPageRoute(builder: (context) => introPage()),
                 );
-            },
-            child: Text('finish'),
+              },
+              child: Text('finish'),
+            ),
+            SizedBox(height: 10.0), // Add some space between cards
+          ],
         ),
-        SizedBox(height: 10.0), // Add some space between cards
-        ],
-      ),
       ),
     );
   }
