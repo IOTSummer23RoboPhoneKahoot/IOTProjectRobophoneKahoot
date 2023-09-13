@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:web_project/services/firebase_service.dart';
 import 'dart:async';
+import 'package:web_project/widgets/charts_stats.dart';
 
 class GamePage extends StatefulWidget {
   final Quiz quiz;
@@ -21,14 +23,21 @@ class _GamePageState extends State<GamePage> {
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
-  // bool showQuestionStats = false;
-
+  Quiz? quiz = quiz_temp;
+  List<Player>? chart1 = [];
+  Map<String, int>? chart2 = {};
+  String? correctAnswer = '';
   @override
   void initState() {
     super.initState();
     _questionDuration =
         int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-    print(widget.quiz.quizDetails.nameOfQuiz);
+    listenOnQuizByID(widget.quiz.quizID.toString()).listen((fetchedQuiz) {
+      setState(() {
+        quiz = fetchedQuiz;
+        chart1 = quiz?.getTopPlayers(3);
+      });
+    });
   }
 
   @override
@@ -90,7 +99,10 @@ class _GamePageState extends State<GamePage> {
                       : QuestionStats(
                           quiz: widget.quiz,
                           currentQuestionIndex: _currentQuestionIndex,
-                        ),
+                          chartData: chart1,
+                          chartData2: chart2,
+                          correctAnswer: correctAnswer,
+                        )
                 ],
               ),
         SizedBox(height: 20.0),
@@ -117,9 +129,6 @@ class _GamePageState extends State<GamePage> {
       setState(() {
         if (_countdownTime > 0) {
           _countdownTime--;
-          // if (_countdownTime == 2) {
-
-          // }
         } else {
           timer.cancel();
 
@@ -134,9 +143,6 @@ class _GamePageState extends State<GamePage> {
     if (_questionTimer != null) {
       _questionTimer!.cancel();
     }
-    // _questionDuration =
-    //     int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-
     _questionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_questionDuration > 0) {
@@ -152,6 +158,10 @@ class _GamePageState extends State<GamePage> {
     print('THE CURRENT QUESTION IS' + _currentQuestionIndex.toString());
     print('THE NUMBER OF  QUESTION IS' +
         widget.quiz.quizDetails.numOfQuestions.toString());
+    // updtae correct answer
+    correctAnswer = quiz?.getCorrectAnswer(_currentQuestionIndex + 1);
+    // update the questions chart
+    chart2 = quiz?.getHistogramForQuestion(_currentQuestionIndex + 1);
     if (_currentQuestionIndex <
         int.parse(widget.quiz.quizDetails.numOfQuestions)) {
       _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
@@ -214,8 +224,15 @@ class QuestionAndAnswers extends StatelessWidget {
 class QuestionStats extends StatelessWidget {
   final Quiz quiz;
   final int currentQuestionIndex;
-
-  QuestionStats({required this.quiz, required this.currentQuestionIndex});
+  final List<Player>? chartData;
+  final Map<String, int>? chartData2;
+  String? correctAnswer = '';
+  QuestionStats(
+      {required this.quiz,
+      required this.currentQuestionIndex,
+      required this.chartData,
+      required this.chartData2,
+      required this.correctAnswer});
 
   @override
   Widget build(BuildContext context) {
@@ -231,8 +248,14 @@ class QuestionStats extends StatelessWidget {
           'Quiz ID: ${quiz.quizID}',
           style: TextStyle(fontSize: 18),
         ),
-        // You can expand this section with more stats about the question.
-        // For example, how many players answered correctly, etc.
+        Text(
+          'correct answer is: ${correctAnswer}',
+          style: TextStyle(fontSize: 18),
+        ),
+        // chart for players
+        ChartScreen(chartData: chartData),
+        // chart for questions
+        ChartScreen(chartData: chartData2),
       ],
     );
   }

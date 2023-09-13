@@ -28,6 +28,21 @@ class Quiz {
     return sortedPlayers.take(x).toList();
   }
 
+  String getCorrectAnswer(int questionID) {
+    String correctAnswer;
+    Question? targetQuestion = questions.firstWhere(
+        (q) => q.questionID == questionID,
+        orElse: () => Question(
+            correctOptionIndex: '-1',
+            options: [],
+            questionID: -1,
+            questionText: "dummey"));
+    correctAnswer =
+        targetQuestion.options[int.parse(targetQuestion.correctOptionIndex)];
+
+    return correctAnswer;
+  }
+
   double getAverageScore() {
     int total = players.fold(0, (sum, player) => sum + player.getScore());
     return players.isEmpty ? 0.0 : total / players.length;
@@ -216,3 +231,34 @@ class Answer {
     );
   }
 }
+
+final Quiz quiz_temp = Quiz(
+  quizID: 'your_quiz_id',
+  questions: [
+    Question(
+      correctOptionIndex: '2',
+      options: ['1', '2', '3', '4'],
+      questionID: 1,
+      questionText: 'How are you?',
+    ),
+    // Add more Question objects as needed
+  ],
+  quizDetails: QuizDetails(
+    nameOfQuiz: 'Your Quiz Name',
+    numOfQuestions: '3',
+    timeToAnswerPerQuestion: '20',
+  ),
+  players: [
+    Player(
+      username: 'player1',
+      answers: [
+        Answer(answer: 2, diffTime: 10, questionID: 1),
+        // Add more Answer objects as needed
+      ],
+      learn: 0,
+      rate: 0,
+      score: 25,
+    ),
+    // Add more Player objects as needed
+  ],
+);
