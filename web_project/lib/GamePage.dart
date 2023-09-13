@@ -26,21 +26,16 @@ class _GamePageState extends State<GamePage> {
   Quiz? quiz = quiz_temp;
   List<Player>? chart1 = [];
   Map<String, int>? chart2 = {};
-
+  String? correctAnswer = '';
   @override
   void initState() {
     super.initState();
     _questionDuration =
         int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-    print(widget.quiz.quizDetails.nameOfQuiz);
-    fetchQuizByID(widget.quiz.quizID.toString()).then((fetchedQuiz) {
+    listenOnQuizByID(widget.quiz.quizID.toString()).listen((fetchedQuiz) {
       setState(() {
         quiz = fetchedQuiz;
         chart1 = quiz?.getTopPlayers(3);
-        // chart2 = quiz?.getHistogramForQuestion(3);
-        // print(_currentQuestionIndex + 2);
-        // print('chart2');
-        // print(chart2);
       });
     });
   }
@@ -106,6 +101,7 @@ class _GamePageState extends State<GamePage> {
                           currentQuestionIndex: _currentQuestionIndex,
                           chartData: chart1,
                           chartData2: chart2,
+                          correctAnswer: correctAnswer,
                         )
                 ],
               ),
@@ -162,6 +158,9 @@ class _GamePageState extends State<GamePage> {
     print('THE CURRENT QUESTION IS' + _currentQuestionIndex.toString());
     print('THE NUMBER OF  QUESTION IS' +
         widget.quiz.quizDetails.numOfQuestions.toString());
+    // updtae correct answer
+    correctAnswer = quiz?.getCorrectAnswer(_currentQuestionIndex + 1);
+    // update the questions chart
     chart2 = quiz?.getHistogramForQuestion(_currentQuestionIndex + 1);
     if (_currentQuestionIndex <
         int.parse(widget.quiz.quizDetails.numOfQuestions)) {
@@ -227,11 +226,13 @@ class QuestionStats extends StatelessWidget {
   final int currentQuestionIndex;
   final List<Player>? chartData;
   final Map<String, int>? chartData2;
+  String? correctAnswer = '';
   QuestionStats(
       {required this.quiz,
       required this.currentQuestionIndex,
       required this.chartData,
-      required this.chartData2});
+      required this.chartData2,
+      required this.correctAnswer});
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +246,10 @@ class QuestionStats extends StatelessWidget {
         SizedBox(height: 16.0),
         Text(
           'Quiz ID: ${quiz.quizID}',
+          style: TextStyle(fontSize: 18),
+        ),
+        Text(
+          'correct answer is: ${correctAnswer}',
           style: TextStyle(fontSize: 18),
         ),
         // chart for players

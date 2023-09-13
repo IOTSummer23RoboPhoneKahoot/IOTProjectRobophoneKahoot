@@ -28,6 +28,21 @@ class Quiz {
     return sortedPlayers.take(x).toList();
   }
 
+  String getCorrectAnswer(int questionID) {
+    String correctAnswer;
+    Question? targetQuestion = questions.firstWhere(
+        (q) => q.questionID == questionID,
+        orElse: () => Question(
+            correctOptionIndex: '-1',
+            options: [],
+            questionID: -1,
+            questionText: "dummey"));
+    correctAnswer =
+        targetQuestion.options[int.parse(targetQuestion.correctOptionIndex)];
+
+    return correctAnswer;
+  }
+
   double getAverageScore() {
     int total = players.fold(0, (sum, player) => sum + player.getScore());
     return players.isEmpty ? 0.0 : total / players.length;
