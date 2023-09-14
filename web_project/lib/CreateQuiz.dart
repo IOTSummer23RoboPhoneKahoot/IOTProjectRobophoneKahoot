@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'firebase_options.dart';
 import 'IntroPage.dart';
+import 'SummaryQuizPage.dart';
 import 'dart:math';
 
 String generatedPin = '0000';
@@ -34,7 +33,7 @@ class NumOfQuestionPage extends StatefulWidget {
 }
 
 class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
-  final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
+  // final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   static TextEditingController numOfQuestionsController =
       TextEditingController();
   static TextEditingController timeToAnswerPerQuestionController =
@@ -78,9 +77,9 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
         ),
       ),
     );
-    numOfQuestionsController.clear();
-    timeToAnswerPerQuestionController.clear();
-    nameOfQuizController.clear();
+    // numOfQuestionsController.clear();
+    // timeToAnswerPerQuestionController.clear();
+    // nameOfQuizController.clear();
   }
 }
 
@@ -191,26 +190,23 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                         .numOfQuestionsController.text)) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => introPage()),
+                    MaterialPageRoute(builder: (context) => summaryPage()),
                   );
                 }
               },
               child: Text('add Question'),
             ),
-            // SizedBox(height: 20),
-            //  ElevatedButton(
-            //   onPressed: () {
-            //     saveQuizData();
-            //   },
-            //   child: Text('save Questions'),
-            // ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => introPage()),
-                );
+                if (numOfQuestionsAdded >=
+                    int.parse(_NumOfQuestionPageState
+                        .numOfQuestionsController.text)) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => introPage()),
+                  );
+                }
               },
               child: Text('back to intro page'),
             )

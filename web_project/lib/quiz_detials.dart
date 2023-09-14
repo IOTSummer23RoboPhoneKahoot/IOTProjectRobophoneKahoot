@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
-import 'package:web_project/GamePage.dart';
 
 class QuizDetailsPage extends StatelessWidget {
   final Quiz quiz;
