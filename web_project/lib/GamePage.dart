@@ -3,11 +3,11 @@ import 'package:web_project/models/quiz.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:web_project/services/firebase_service.dart';
 import 'dart:async';
+import 'package:web_project/widgets/charts_stats.dart';
 import 'package:web_project/widgets/playersjoinWidget.dart';
 import 'package:web_project/widgets/TopScoreWidget.dart';
 import 'package:web_project/widgets/fastestPlayerWidget.dart';
 import 'package:web_project/widgets/correctEachQuestionWidget.dart';
-
 
 class GamePage extends StatefulWidget {
   final Quiz quiz;
@@ -27,21 +27,21 @@ class _GamePageState extends State<GamePage> {
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
-  bool _quizCompleted = false; // Track quiz completion
   Quiz? quiz = quiz_temp;
   List<Player>? chart1 = [];
   Map<String, int>? chart2 = {};
   String? correctAnswer = '';
-  
+  bool is_game_finished = false;
   @override
   void initState() {
     super.initState();
-    _questionDuration =
-        int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-    listenOnQuizByID(widget.quiz.quizID.toString()).listen((fetchedQuiz) {
+
+    fetchQuizByID(widget.quiz.quizID.toString()).then((fetchedQuiz) {
       setState(() {
         quiz = fetchedQuiz;
         chart1 = quiz?.getTopPlayers(3);
+        _questionDuration =
+            int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion) - 1;
       });
     });
   }
@@ -60,12 +60,9 @@ class _GamePageState extends State<GamePage> {
         title: Text('Robophone Kahoot Game'),
       ),
       body: Center(
-        child: _
-        Completed
-            ? _buildQuizCompletedView()
-            : _currentQuestionIndex == -1
-                ? _buildQuizDetails()
-                : _buildQuestionView(),
+        child: _currentQuestionIndex == -1
+            ? _buildQuizDetails()
+            : _buildQuestionView(),
       ),
     );
   }
@@ -83,15 +80,12 @@ class _GamePageState extends State<GamePage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          widget.quiz.quizDetails.nameOfQuiz,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
+        Text(widget.quiz.quizDetails.nameOfQuiz,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         SizedBox(height: 8.0),
         Text('Number of Questions: ${widget.quiz.quizDetails.numOfQuestions}'),
         Text(
-          'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds',
-        ),
+            'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds'),
         Text(
           'QuizPIN: ${widget.quiz.quizID}',
         ),
@@ -134,74 +128,86 @@ class _GamePageState extends State<GamePage> {
                 ],
               ),
         SizedBox(height: 20.0),
-        if (!_quizCompleted) // Display "Show Next Question" button conditionally
-          _questionDuration == 0
-              ? ElevatedButton(
-                  onPressed: _startCountdown,
-                  child: Text("Show Next Question"),
-                )
-              : Container(),
+        _questionDuration == 0
+            ? ElevatedButton(
+                onPressed:
+                    is_game_finished == false ? _startCountdown : _endGame,
+                child: is_game_finished == false
+                    ? Text("Show Next Question")
+                    : Text("Show Game Summary"),
+              )
+            : Container(),
       ],
     );
   }
 
-  void _startCountdown() {
+  void _startCountdown() async {
     setState(() {
-      _questionDuration =
-          int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
+      // _questionDuration =
+      //     int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
       _currentQuestionIndex += 1;
     });
 
-    _countdownTime = 2;
-    _showNextQuestion();
+    await _showNextQuestion();
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdownTime > 0) {
           _countdownTime--;
         } else {
-          timer.cancel();
-
           _startQuestionTimer();
+          timer.cancel();
         }
       });
+      // Update the UI.
     });
   }
 
   void _startQuestionTimer() {
-    if (_questionTimer != null) {
-      _questionTimer!.cancel();
-    }
     _questionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_questionDuration > 0) {
           _questionDuration--;
         } else {
           timer.cancel();
+          fetchQuizByID(widget.quiz.quizID.toString()).then((fetchedQuiz) {
+            setState(() {
+              quiz = fetchedQuiz;
+              chart1 = quiz?.getTopPlayers(3);
+            });
+          });
         }
       });
     });
   }
 
-  void _showNextQuestion() async {
+  Future _showNextQuestion() async {
     print('THE CURRENT QUESTION IS' + _currentQuestionIndex.toString());
     print('THE NUMBER OF  QUESTION IS' +
         widget.quiz.quizDetails.numOfQuestions.toString());
-    // updtae correct answer
-    correctAnswer = quiz?.getCorrectAnswer(_currentQuestionIndex + 1);
-    // update the questions chart
-    chart2 = quiz?.getHistogramForQuestion(_currentQuestionIndex + 1);
-
     if (_currentQuestionIndex <
         int.parse(widget.quiz.quizDetails.numOfQuestions)) {
       _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
       _answers = widget.quiz.questions[_currentQuestionIndex].options;
-    } else {
-      _questionText = "Quiz completed!";
-      _answers = [];
+      // updtae correct answer
+      correctAnswer = quiz?.getCorrectAnswer(_currentQuestionIndex + 1);
+      // update the questions chart
+      chart2 = quiz?.getHistogramForQuestion(_currentQuestionIndex + 1);
+    }
+    if (_currentQuestionIndex + 1 ==
+        int.parse(widget.quiz.quizDetails.numOfQuestions)) {
+      // this is the last question so we need to update the flag to go to game summary
       setState(() {
-        _quizCompleted = true;
+        is_game_finished = true;
       });
     }
+    // } else {
+    //   print('GOT THE ELSE');
+    //   _questionText = "Quiz completed!";
+    //   _answers = [];
+    //   //TODO: here we got to the end of the quiz so we want to update the state
+    //   //to be end of the game and will show the summary widget,
+    //   // we could add a flag that give us indication for that.
+    // }
 
     DateTime questionTime = DateTime.now().add(Duration(seconds: 5));
     String nextQuestionTime =
@@ -216,46 +222,30 @@ class _GamePageState extends State<GamePage> {
     };
 
     await _databaseRef
-        .child('Robophone/quizzes/${widget.quiz.quizID}')
+        .child('Robophone/5669122872442880/quizzes/${widget.quiz.quizID}')
         .update(updateData);
-  }
-
-  Widget _buildQuizCompletedView() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Quiz Completed',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        ElevatedButton(
-          onPressed: _endGame,
-          child: Text("End Game"),
-        ),
-      ],
-    );
   }
 
   void _endGame() {
     // Navigate to the HighestScorePage with the quiz object
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HighestScoreWidget(quiz: widget.quiz),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => HighestScoreWidget(quiz: widget.quiz),
+    //   ),
+    // );
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => FastestPlayerWidget(quiz: widget.quiz),
       ),
     );
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CorrectAnswersWidget(quiz: widget.quiz),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => CorrectAnswersWidget(quiz: widget.quiz),
+    //   ),
+    // );
   }
 }
 

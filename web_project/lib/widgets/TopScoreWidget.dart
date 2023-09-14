@@ -38,10 +38,10 @@ class _HighestScoreWidgetState extends State<HighestScoreWidget> {
     });
   }
 
-  double findHighestScore() {
-    double highestScore = -1 *
-        (double.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion)) *
-        (double.parse(widget.quiz.quizDetails.numOfQuestions));
+  int findHighestScore() {
+    int highestScore = -1 *
+        (int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion)) *
+        (int.parse(widget.quiz.quizDetails.numOfQuestions));
 
     for (final player in players) {
       if (player.score > highestScore) {
@@ -106,7 +106,7 @@ class _HighestScoreWidgetState extends State<HighestScoreWidget> {
                   SizedBox(height: 8.0),
                   // Add your chart of the top 3 winners here
                   Container(
-                    height: 300, // Adjust the height as needed
+                    height: 200, // Adjust the height as needed
                     child: SfCartesianChart(
                       primaryXAxis: CategoryAxis(),
                       series: <ChartSeries>[

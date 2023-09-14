@@ -115,11 +115,13 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 
     // Add the question and answer to the list
     numOfQuestionsAdded += 1;
-    _databaseRef.child('Robophone/quizzes/' + generatedPin + '/quizID').update({
+    _databaseRef
+        .child('Robophone/5669122872442880/quizzes/' + generatedPin + '/quizID')
+        .update({
       'quizID': generatedPin,
     });
     _databaseRef
-        .child('Robophone/quizzes/' +
+        .child('Robophone/5669122872442880/quizzes/' +
             generatedPin +
             '/questions/' +
             numOfQuestionsAdded.toString())
@@ -129,7 +131,9 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       'options': [answer1, answer2, answer3, answer4],
     });
     _databaseRef
-        .child('Robophone/quizzes/' + generatedPin + '/quizDetails')
+        .child('Robophone/5669122872442880/quizzes/' +
+            generatedPin +
+            '/quizDetails')
         .update({
       'nameOfQuiz': nameOfQuiz,
       'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
