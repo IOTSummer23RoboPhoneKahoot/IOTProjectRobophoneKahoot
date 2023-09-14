@@ -5,9 +5,7 @@ import 'package:web_project/services/firebase_service.dart';
 import 'dart:async';
 import 'package:web_project/widgets/charts_stats.dart';
 import 'package:web_project/widgets/playersjoinWidget.dart';
-import 'package:web_project/widgets/TopScoreWidget.dart';
-import 'package:web_project/widgets/fastestPlayerWidget.dart';
-import 'package:web_project/widgets/correctEachQuestionWidget.dart';
+import 'package:web_project/widgets/endGameScreen.dart';
 
 class GamePage extends StatefulWidget {
   final Quiz quiz;
@@ -228,24 +226,12 @@ class _GamePageState extends State<GamePage> {
 
   void _endGame() {
     // Navigate to the HighestScorePage with the quiz object
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => HighestScoreWidget(quiz: widget.quiz),
-    //   ),
-    // );
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FastestPlayerWidget(quiz: widget.quiz),
+        builder: (context) => EndGameScreen(quiz: widget.quiz),
       ),
     );
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => CorrectAnswersWidget(quiz: widget.quiz),
-    //   ),
-    // );
   }
 }
 
