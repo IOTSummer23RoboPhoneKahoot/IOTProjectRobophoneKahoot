@@ -99,7 +99,62 @@ class _GamePageState extends State<GamePage> {
       ],
     );
   }
+  ///updated by ruqaya
+ // Widget _buildQuizDetails() {
+ //    return Row(
+ //      children: [
+ //        Expanded(
+ //          flex: 3,
+ //          child: Align(
+ //            alignment:
+ //                Alignment.topCenter, // Align the Column to the top-middle
+ //            child: Padding(
+ //              padding: const EdgeInsets.only(
+ //                  left: 20.0), // Adjust the left padding as needed
+ //              child: Column(
+ //                mainAxisAlignment: MainAxisAlignment.center,
+ //                crossAxisAlignment: CrossAxisAlignment.center,
+ //                children: [
+ //                  Text(
+ //                    widget.quiz.quizDetails.nameOfQuiz,
+ //                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+ //                  ),
+ //                  SizedBox(height: 8.0),
+ //                  Text(
+ //                      'Number of Questions: ${widget.quiz.quizDetails.numOfQuestions}'),
+ //                  Text(
+ //                    'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds',
+ //                  ),
+ //                  Text(
+ //                    'QuizPIN: ${widget.quiz.quizID}',
+ //                  ),
+ //                  SizedBox(height: 10.0),
+ //                  ElevatedButton(
+ //                    onPressed: _startCountdown,
+ //                    child: Text('Start Game'),
+ //                  ),
+ //                ],
+ //              ),
+ //            ),
+ //          ),
+ //        ),
+ //        Expanded(
+ //          flex: 3,
+ //          child: Align(
+ //            alignment: Alignment
+ //                .topCenter, // Align the PlayerListScreen to the top-middle
+ //            child: Container(
+ //              constraints: BoxConstraints(
+ //                  maxHeight: 300.0), // Adjust the maxHeight as needed
+ //              child: PlayerListScreen(quiz: widget.quiz),
+ //            ),
+ //          ),
+ //        ),
+ //      ],
+ //    );
+ //  }
 
+  
   Widget _buildQuestionView() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -138,6 +193,48 @@ class _GamePageState extends State<GamePage> {
       ],
     );
   }
+//updated by ruqaya
+  //   Widget _buildQuestionView() {
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: <Widget>[
+  //       _countdownTime > 0
+  //           ? Text('Starting in: $_countdownTime seconds')
+  //           : Column(
+  //               children: [
+  //                 _questionDuration > 0
+  //                     ? Column(
+  //                         children: <Widget>[
+  //                           Text('Time left: $_questionDuration seconds'),
+  //                           QuestionAndAnswers(
+  //                               questionText: _questionText, answers: _answers),
+  //                         ],
+  //                       )
+  //                     : Column(
+  //                         children: [
+  //                           AnswersEachQuestion(
+  //                             quiz: widget.quiz,
+  //                             questionNum: _currentQuestionIndex,
+  //                           ),
+  //                           QuestionStats(
+  //                             quiz: widget.quiz,
+  //                             currentQuestionIndex: _currentQuestionIndex,
+  //                           ),
+  //                         ],
+  //                       ),
+  //               ],
+  //             ),
+  //       SizedBox(height: 20.0),
+  //       if (!_quizCompleted)
+  //         _questionDuration == 0
+  //             ? ElevatedButton(
+  //                 onPressed: _startCountdown,
+  //                 child: Text("Show Next Question"),
+  //               )
+  //             : Container(),
+  //     ],
+  //   );
+  // }
 
   void _startCountdown() async {
     setState(() {
@@ -233,6 +330,15 @@ class _GamePageState extends State<GamePage> {
       ),
     );
   }
+//updated by ruqaya
+  //   void _endGame() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => EndGameScreen(quiz: widget.quiz),
+  //     ),
+  //   );
+  // }
 }
 
 class QuestionAndAnswers extends StatelessWidget {
