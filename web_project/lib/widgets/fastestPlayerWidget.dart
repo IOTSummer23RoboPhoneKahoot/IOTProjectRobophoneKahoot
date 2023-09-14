@@ -76,21 +76,21 @@ class _FastestPlayerWidgetState extends State<FastestPlayerWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Card(
-                  elevation: 4.0,
-                  margin: EdgeInsets.all(16.0),
+                  elevation: 2.0,
+                  margin: EdgeInsets.all(8.0),
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(8.0),
                     child: Column(
                       children: [
                         Text(
                           'Fastest Player:' + username,
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                              fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 8.0),
                         Text(
                           'diffTime: ' + totalDiffTime.toString(),
-                          style: TextStyle(fontSize: 24),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ],
                     ),
