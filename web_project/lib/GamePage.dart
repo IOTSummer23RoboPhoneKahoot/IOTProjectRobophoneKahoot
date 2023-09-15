@@ -65,136 +65,97 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  void _joinPlayers() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PlayerListScreen(quiz: widget.quiz),
-      ),
-    );
-  }
+  // void _joinPlayers() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => PlayerListScreen(quiz: widget.quiz),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildQuizDetails() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(widget.quiz.quizDetails.nameOfQuiz,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        SizedBox(height: 8.0),
-        Text('Number of Questions: ${widget.quiz.quizDetails.numOfQuestions}'),
-        Text(
-            'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds'),
-        Text(
-          'QuizPIN: ${widget.quiz.quizID}',
-        ),
-        SizedBox(height: 10.0),
-        ElevatedButton(
-          onPressed: _startCountdown,
-          child: Text('Start Game'),
-        ),
-        ElevatedButton(
-          onPressed: _joinPlayers,
-          child: Text('Join Players'),
-        ),
-      ],
-    );
-  }
+  // Widget _buildQuizDetails() {
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Text(widget.quiz.quizDetails.nameOfQuiz,
+  //           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+  //       SizedBox(height: 8.0),
+  //       Text('Number of Questions: ${widget.quiz.quizDetails.numOfQuestions}'),
+  //       Text(
+  //           'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds'),
+  //       Text(
+  //         'QuizPIN: ${widget.quiz.quizID}',
+  //       ),
+  //       SizedBox(height: 10.0),
+  //       ElevatedButton(
+  //         onPressed: _startCountdown,
+  //         child: Text('Start Game'),
+  //       ),
+  //       ElevatedButton(
+  //         onPressed: _joinPlayers,
+  //         child: Text('Join Players'),
+  //       ),
+  //     ],
+  //   );
+  // }
   ///updated by ruqaya
- // Widget _buildQuizDetails() {
- //    return Row(
- //      children: [
- //        Expanded(
- //          flex: 3,
- //          child: Align(
- //            alignment:
- //                Alignment.topCenter, // Align the Column to the top-middle
- //            child: Padding(
- //              padding: const EdgeInsets.only(
- //                  left: 20.0), // Adjust the left padding as needed
- //              child: Column(
- //                mainAxisAlignment: MainAxisAlignment.center,
- //                crossAxisAlignment: CrossAxisAlignment.center,
- //                children: [
- //                  Text(
- //                    widget.quiz.quizDetails.nameOfQuiz,
- //                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
- //                  ),
- //                  SizedBox(height: 8.0),
- //                  Text(
- //                      'Number of Questions: ${widget.quiz.quizDetails.numOfQuestions}'),
- //                  Text(
- //                    'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds',
- //                  ),
- //                  Text(
- //                    'QuizPIN: ${widget.quiz.quizID}',
- //                  ),
- //                  SizedBox(height: 10.0),
- //                  ElevatedButton(
- //                    onPressed: _startCountdown,
- //                    child: Text('Start Game'),
- //                  ),
- //                ],
- //              ),
- //            ),
- //          ),
- //        ),
- //        Expanded(
- //          flex: 3,
- //          child: Align(
- //            alignment: Alignment
- //                .topCenter, // Align the PlayerListScreen to the top-middle
- //            child: Container(
- //              constraints: BoxConstraints(
- //                  maxHeight: 300.0), // Adjust the maxHeight as needed
- //              child: PlayerListScreen(quiz: widget.quiz),
- //            ),
- //          ),
- //        ),
- //      ],
- //    );
- //  }
-
-  
-  Widget _buildQuestionView() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        _countdownTime > 0
-            ? Text('Starting in: $_countdownTime seconds')
-            : Column(
+ Widget _buildQuizDetails() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: Align(
+            alignment:
+                Alignment.topCenter, // Align the Column to the top-middle
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  left: 20.0), // Adjust the left padding as needed
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _questionDuration > 0
-                      ? Column(
-                          children: <Widget>[
-                            Text('Time left: $_questionDuration seconds'),
-                            QuestionAndAnswers(
-                                questionText: _questionText, answers: _answers),
-                          ],
-                        )
-                      : QuestionStats(
-                          quiz: widget.quiz,
-                          currentQuestionIndex: _currentQuestionIndex,
-                          chartData: chart1,
-                          chartData2: chart2,
-                          correctAnswer: correctAnswer,
-                        )
+                  Text(
+                    widget.quiz.quizDetails.nameOfQuiz,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text(
+                      'Number of Questions: ${widget.quiz.quizDetails.numOfQuestions}'),
+                  Text(
+                    'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds',
+                  ),
+                  Text(
+                    'QuizPIN: ${widget.quiz.quizID}',
+                  ),
+                  SizedBox(height: 10.0),
+                  ElevatedButton(
+                    onPressed: _startCountdown,
+                    child: Text('Start Game'),
+                  ),
                 ],
               ),
-        SizedBox(height: 20.0),
-        _questionDuration == 0
-            ? ElevatedButton(
-                onPressed:
-                    is_game_finished == false ? _startCountdown : _endGame,
-                child: is_game_finished == false
-                    ? Text("Show Next Question")
-                    : Text("Show Game Summary"),
-              )
-            : Container(),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Align(
+            alignment: Alignment
+                .topCenter, // Align the PlayerListScreen to the top-middle
+            child: Container(
+              constraints: BoxConstraints(
+                  maxHeight: 300.0), // Adjust the maxHeight as needed
+              child: PlayerListScreen(quiz: widget.quiz),
+            ),
+          ),
+        ),
       ],
     );
   }
-//updated by ruqaya
-  //   Widget _buildQuestionView() {
+
+  
+  // Widget _buildQuestionView() {
   //   return Column(
   //     mainAxisAlignment: MainAxisAlignment.center,
   //     children: <Widget>[
@@ -210,31 +171,76 @@ class _GamePageState extends State<GamePage> {
   //                               questionText: _questionText, answers: _answers),
   //                         ],
   //                       )
-  //                     : Column(
-  //                         children: [
-  //                           AnswersEachQuestion(
-  //                             quiz: widget.quiz,
-  //                             questionNum: _currentQuestionIndex,
-  //                           ),
-  //                           QuestionStats(
-  //                             quiz: widget.quiz,
-  //                             currentQuestionIndex: _currentQuestionIndex,
-  //                           ),
-  //                         ],
-  //                       ),
+  //                     : QuestionStats(
+  //                         quiz: widget.quiz,
+  //                         currentQuestionIndex: _currentQuestionIndex,
+  //                         chartData: chart1,
+  //                         chartData2: chart2,
+  //                         correctAnswer: correctAnswer,
+  //                       )
   //               ],
   //             ),
   //       SizedBox(height: 20.0),
-  //       if (!_quizCompleted)
-  //         _questionDuration == 0
-  //             ? ElevatedButton(
-  //                 onPressed: _startCountdown,
-  //                 child: Text("Show Next Question"),
-  //               )
-  //             : Container(),
+  //       _questionDuration == 0
+  //           ? ElevatedButton(
+  //               onPressed:
+  //                   is_game_finished == false ? _startCountdown : _endGame,
+  //               child: is_game_finished == false
+  //                   ? Text("Show Next Question")
+  //                   : Text("Show Game Summary"),
+  //             )
+  //           : Container(),
   //     ],
   //   );
   // }
+//updated by ruqaya
+    Widget _buildQuestionView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        _countdownTime > 0
+            ? Text('Starting in: $_countdownTime seconds')
+            : Column(
+                children: [
+                  _questionDuration > 0
+                      ? Column(
+                          children: <Widget>[
+                            Text('Time left: $_questionDuration seconds'),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: QuestionAndAnswers(
+                                    questionText: _questionText,
+                                    answers: _answers,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: AnswersEachQuestion(
+                                    quiz: widget.quiz,
+                                    questionNum: _currentQuestionIndex,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                      : QuestionStats(
+                          quiz: widget.quiz,
+                          currentQuestionIndex: _currentQuestionIndex,
+                        ),
+                ],
+              ),
+        SizedBox(height: 20.0),
+        if (!_quizCompleted)
+          _questionDuration == 0
+              ? ElevatedButton(
+                  onPressed: _startCountdown,
+                  child: Text("Show Next Question"),
+                )
+              : Container(),
+      ],
+    );
+  }
 
   void _startCountdown() async {
     setState(() {
