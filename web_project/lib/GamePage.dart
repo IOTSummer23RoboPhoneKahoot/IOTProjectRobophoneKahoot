@@ -244,8 +244,8 @@ class _GamePageState extends State<GamePage> {
 
   void _startCountdown() async {
     setState(() {
-      // _questionDuration =
-      //     int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
+      _questionDuration =
+          int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
       _currentQuestionIndex += 1;
     });
 
