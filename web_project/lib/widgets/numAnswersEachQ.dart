@@ -13,7 +13,7 @@ class AnswersEachQuestion extends StatefulWidget {
 }
 
 class _AnswersEachQuestionState extends State<AnswersEachQuestion> {
-  int options = 0;
+  int numAnswers = 0;
   List<Player> players = [];
   Quiz quiz1 = Quiz(
     quizID: '',
@@ -44,7 +44,7 @@ class _AnswersEachQuestionState extends State<AnswersEachQuestion> {
           for (final player in players) {
             int answer = player.answers[questionNum].answer;
             if (answer != 0) {
-              options++;
+              numAnswers++;
             }
           }
         }
@@ -62,20 +62,23 @@ class _AnswersEachQuestionState extends State<AnswersEachQuestion> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'Number of Players: $options',
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+    return Container(
+      width: 58.0, // Set the width of the circular container
+      height: 58.0, // Set the height of the circular container
+      decoration: BoxDecoration(
+        shape: BoxShape.circle, // Make the container circular
+        color: Colors.blue, // Set the background color
+      ),
+      child: Center(
+        child: Text(
+          '       $numAnswers \n Answers',
+          style: TextStyle(
+            color: Colors.white, // Set the text color to white
+            fontSize: 13, // Set the font size
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        SizedBox(height: 8.0),
-        // Text(
-        //   options.toString(),
-        //   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        // ),
-      ],
+      ),
     );
   }
 }

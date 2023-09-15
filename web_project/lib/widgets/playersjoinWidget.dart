@@ -57,7 +57,23 @@ class _PlayerListScreenState extends State<PlayerListScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text('Number of Players: $playersNum'),
+          child: Container(
+            width: 55, // Set the width of the circular container
+            height: 55, // Set the height of the circular container
+            decoration: BoxDecoration(
+              shape: BoxShape.circle, // Make the container circular
+              color: Colors.blue, // Set the background color
+            ),
+            child: Center(
+              child: Text(
+                '      $playersNum \n Players',
+                style: TextStyle(
+                  color: Colors.white, // Set the text color to white
+                  fontSize: 14, // Set the font size
+                ),
+              ),
+            ),
+          ),
         ),
         Expanded(
           child: ListView.builder(

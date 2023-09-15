@@ -22,7 +22,7 @@ class _GamePageState extends State<GamePage> {
   String _questionText = '';
   List<String> _answers = [];
   int _currentQuestionIndex = -1;
-  int _countdownTime = 15;
+  int _countdownTime = 2;
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
@@ -224,7 +224,7 @@ class _GamePageState extends State<GamePage> {
       _questionDuration =
           int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
       _currentQuestionIndex += 1;
-      _countdownTime = 15;
+      _countdownTime = 2;
     });
 
     await _showNextQuestion();
