@@ -1,64 +1,7 @@
-// import 'package:flutter/material.dart';
-// import 'package:web_project/models/quiz.dart';
-// import 'package:web_project/services/firebase_service.dart';
-
-// class PlayerListScreen extends StatefulWidget {
-//   final Quiz quiz;
-
-//   PlayerListScreen({required this.quiz});
-
-//   @override
-//   _PlayerListScreenState createState() => _PlayerListScreenState();
-// }
-
-// class _PlayerListScreenState extends State<PlayerListScreen> {
-//   List<Player> players = [];
-//   Quiz quiz1 = Quiz(
-//     quizID: '',
-//     questions: [],
-//     quizDetails: QuizDetails(
-//       nameOfQuiz: '',
-//       numOfQuestions: '',
-//       timeToAnswerPerQuestion: '',
-//     ),
-//     players: [],
-//   );
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     listenOnQuizByID(widget.quiz.quizID).listen((fetchedQuiz) {
-//       if (fetchedQuiz != null) {
-//         setState(() {
-//           quiz1 = fetchedQuiz;
-//           players = fetchedQuiz.players;
-//         });
-//       } else {
-//         // Handle the case where there was an error or no data was found
-//       }
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Players List'),
-//       ),
-//       body: ListView.builder(
-//         itemCount: players.length,
-//         itemBuilder: (context, index) {
-//           return ListTile(
-//             title: Text(players[index].username),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:web_project/services/firebase_service.dart';
+import 'dart:async'; // Import needed for StreamSubscription
 
 class PlayerListScreen extends StatefulWidget {
   final Quiz quiz;
@@ -80,11 +23,17 @@ class _PlayerListScreenState extends State<PlayerListScreen> {
     ),
     players: [],
   );
+
+  StreamSubscription?
+      _quizSubscription; // Declare a StreamSubscription at the class level
+
   @override
   void initState() {
     super.initState();
-    listenOnQuizByID(widget.quiz.quizID).listen((fetchedQuiz) {
-      if (fetchedQuiz != null) {
+    _quizSubscription =
+        listenOnQuizByID(widget.quiz.quizID).listen((fetchedQuiz) {
+      if (fetchedQuiz != null && mounted) {
+        // Check for mounted before setState
         setState(() {
           quiz1 = fetchedQuiz;
           players = fetchedQuiz.players;
@@ -96,8 +45,10 @@ class _PlayerListScreenState extends State<PlayerListScreen> {
     });
   }
 
-  Widget temp(BuildContext context) {
-    return build(context);
+  @override
+  void dispose() {
+    _quizSubscription?.cancel(); // Cancel the StreamSubscription
+    super.dispose();
   }
 
   @override

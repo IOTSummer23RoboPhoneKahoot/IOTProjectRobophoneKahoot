@@ -24,15 +24,17 @@ class _EndGameScreen extends State<EndGameScreen> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            HighestScoreWidget(quiz: widget.quiz),
-            SizedBox(height: 10),
-            FastestPlayerWidget(quiz: widget.quiz),
-            SizedBox(height: 10),
-            TopNWinners(quiz: widget.quiz),
-            SizedBox(height: 10),
-            CorrectAnswersWidget(quiz: widget.quiz),
-          ],
+          children: widget.quiz.players.isEmpty
+              ? [Center(child: Text("There is no data to show"))]
+              : [
+                  HighestScoreWidget(quiz: widget.quiz),
+                  SizedBox(height: 10),
+                  FastestPlayerWidget(quiz: widget.quiz),
+                  SizedBox(height: 10),
+                  TopNWinners(quiz: widget.quiz),
+                  SizedBox(height: 10),
+                  CorrectAnswersWidget(quiz: widget.quiz),
+                ],
         ),
       ),
     );

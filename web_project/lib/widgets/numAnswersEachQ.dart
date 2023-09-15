@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:web_project/services/firebase_service.dart';
+import 'dart:async';
 
 class AnswersEachQuestion extends StatefulWidget {
   final Quiz quiz;
@@ -8,10 +9,10 @@ class AnswersEachQuestion extends StatefulWidget {
   AnswersEachQuestion({required this.quiz, required this.questionNum});
 
   @override
-  _AnswersEachQuestion createState() => _AnswersEachQuestion();
+  _AnswersEachQuestionState createState() => _AnswersEachQuestionState();
 }
 
-class _AnswersEachQuestion extends State<AnswersEachQuestion> {
+class _AnswersEachQuestionState extends State<AnswersEachQuestion> {
   int options = 0;
   List<Player> players = [];
   Quiz quiz1 = Quiz(
@@ -25,12 +26,15 @@ class _AnswersEachQuestion extends State<AnswersEachQuestion> {
     players: [],
   );
 
+  StreamSubscription? _streamSubscription; // Add this line
+
   @override
   void initState() {
     super.initState();
     int questionNum = widget.questionNum;
 
-    listenOnQuizByID(widget.quiz.quizID).listen((fetchedQuiz) {
+    _streamSubscription =
+        listenOnQuizByID(widget.quiz.quizID).listen((fetchedQuiz) {
       if (fetchedQuiz != null) {
         setState(() {
           quiz1 = fetchedQuiz;
@@ -51,20 +55,26 @@ class _AnswersEachQuestion extends State<AnswersEachQuestion> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _streamSubscription?.cancel(); // Cancel the stream subscription
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Number of Players:',
+          'Number of Players: $options',
           style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8.0),
-        Text(
-          options.toString(),
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        ),
+        // Text(
+        //   options.toString(),
+        //   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        // ),
       ],
     );
   }

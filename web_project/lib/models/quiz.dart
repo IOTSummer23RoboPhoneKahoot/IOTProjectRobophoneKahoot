@@ -76,7 +76,7 @@ class Quiz {
   }
 
   List<Player> getTopPlayers(int x) {
-    List<Player> sortedPlayers = List.from(players);
+    List<Player> sortedPlayers = players.toList();
     sortedPlayers.sort((a, b) => b.getScore().compareTo(a.getScore()));
     return sortedPlayers.take(x).toList();
   }
@@ -110,8 +110,18 @@ class Quiz {
   }
 
   double getAverageScore() {
-    int total = players.fold(0, (sum, player) => sum + player.getScore());
-    return players.isEmpty ? 0.0 : total / players.length;
+    int totalPlayersWithScores = 0; // Number of players with valid scores
+    double totalScore = players.fold(0, (sum, player) {
+      if (player.getScore() != null) {
+        totalPlayersWithScores += 1;
+        return sum + player.getScore();
+      }
+      return sum; // if player has null score, just return the current sum
+    });
+
+    return totalPlayersWithScores == 0
+        ? 0.0
+        : totalScore / totalPlayersWithScores;
   }
 
   Map<String, int> getHistogramForQuestion(int questionID) {
@@ -125,7 +135,7 @@ class Quiz {
             options: [],
             questionID: -1,
             questionText: "dummey")); // This is a dummy question
-
+    print("targe Qusetion" + targetQuestion.toString());
     // Initialize histogram with 0 for each option
     for (String option in targetQuestion.options) {
       histogram[option] = 0;
@@ -235,7 +245,7 @@ class Player {
   final List<Answer> answers;
   final int learn;
   final int rate;
-  final int score;
+  final double score;
 
   Player({
     required this.username,
@@ -249,7 +259,7 @@ class Player {
     return 'Player(username: $username, answers: $answers, learn: $learn, rate: $rate, score: $score)';
   }
 
-  int getScore() {
+  double getScore() {
     return score;
   }
 

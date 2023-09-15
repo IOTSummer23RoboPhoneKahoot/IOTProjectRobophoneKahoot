@@ -42,8 +42,6 @@ class _TopNWinners extends State<TopNWinners> {
 
   @override
   Widget build(BuildContext context) {
-    final highestScore = quiz1.getTopPlayers(1)[0].getScore();
-
     return Card(
       elevation: 2.0,
       margin: EdgeInsets.all(8.0),

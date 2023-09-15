@@ -8,8 +8,7 @@ Future<List<Quiz>> fetchQuizzes() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final _databaseRef = FirebaseDatabase.instance.ref();
   try {
-    DatabaseEvent event =
-        await _databaseRef.child('Robophone/5669122872442880/quizzes').once();
+    DatabaseEvent event = await _databaseRef.child('Robophone/quizzes').once();
     DataSnapshot dataSnapshot = event.snapshot;
     if (dataSnapshot.value != null && dataSnapshot.value is Map) {
       List<Quiz> quizzes = [];
@@ -40,9 +39,8 @@ Future<Quiz?> fetchQuizByID(String quizID) async {
   final _databaseRef = FirebaseDatabase.instance.ref();
 
   try {
-    DatabaseEvent event = await _databaseRef
-        .child('Robophone/5669122872442880/quizzes/$quizID')
-        .once();
+    DatabaseEvent event =
+        await _databaseRef.child('Robophone/quizzes/$quizID').once();
     DataSnapshot dataSnapshot = event.snapshot;
 
     if (dataSnapshot.value != null && dataSnapshot.value is Map) {
@@ -63,10 +61,7 @@ Future<Quiz?> fetchQuizByID(String quizID) async {
 Stream<Quiz?> listenOnQuizByID(String quizID) {
   final _databaseRef = FirebaseDatabase.instance.ref();
 
-  return _databaseRef
-      .child('Robophone/5669122872442880/quizzes/$quizID')
-      .onValue
-      .map((event) {
+  return _databaseRef.child('Robophone/quizzes/$quizID').onValue.map((event) {
     final dataSnapshot = event.snapshot.value;
     if (dataSnapshot != null && dataSnapshot is Map) {
       try {
