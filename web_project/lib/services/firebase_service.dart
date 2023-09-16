@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:web_project/models/quiz.dart';
-import '../firebase_options.dart';
+import '../firebaseCreds/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:async';
 
