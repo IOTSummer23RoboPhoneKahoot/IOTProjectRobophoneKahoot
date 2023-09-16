@@ -5,6 +5,7 @@ import 'IntroPage.dart';
 import 'SummaryQuizPage.dart';
 import 'dart:math';
 
+String? pin;
 Future<String?> generatePin() async {
   String? pin;
 
@@ -15,6 +16,11 @@ Future<String?> generatePin() async {
   });
 
   return pin;
+}
+
+Future<void> updatePinDB(String newPin) async {
+  // Generate a random 4-digit PIN
+  await updatePin(newPin);
 }
 
 class CreateQuizApp extends StatelessWidget {
@@ -42,7 +48,6 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
   static TextEditingController timeToAnswerPerQuestionController =
       TextEditingController();
   static TextEditingController nameOfQuizController = TextEditingController();
-  String? pin;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,17 +78,16 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                   setState(() {
                     pin = generatedPin;
                     print('pin: $pin');
-                    if (pin != null) {
-                      pin = (int.parse(pin!) + 1).toString();
-                      print('pin: $pin');
-                    }
                   });
+
+                  // Now that you have the updated pin, navigate to QuizCreatorPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QuizCreatorPage(pin: pin),
+                    ),
+                  );
                 });
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => QuizCreatorPage(pin: pin)),
-                );
               },
               child: Text('Continue'),
             ),
@@ -96,7 +100,8 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
 
 class QuizCreatorPage extends StatefulWidget {
   String? pin;
-  QuizCreatorPage({this.pin});
+  QuizCreatorPage(
+      {required this.pin}); // Use required keyword to make pin non-nullable
   @override
   _QuizCreatorPageState createState() => _QuizCreatorPageState();
 }
@@ -110,15 +115,15 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   TextEditingController answer2Controller = TextEditingController();
   TextEditingController answer3Controller = TextEditingController();
   TextEditingController answer4Controller = TextEditingController();
-  String? pin;
-  void initState() {
-    super.initState();
+  // String? pin;
+  // void initState() {
+  //   super.initState();
 
-    setState(() {
-      pin = widget.pin;
-    });
-  }
-
+  //   setState(() {
+  //     pin = widget.pin;
+  //     print('pin2222: $pin');
+  //   });
+  // }
   List<Map<String, dynamic>> quizDataList = [];
   void addQuizData() {
     // TODO: add the name of the quiz
@@ -137,13 +142,13 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     // Add the question and answer to the list
     numOfQuestionsAdded += 1;
     _databaseRef
-        .child('sabaaTest/quizzes/' + pin.toString() + '/quizID')
+        .child('sabaaTest/quizzes/' + widget.pin.toString() + '/quizID')
         .update({
-      'quizID': pin.toString(),
+      'quizID': widget.pin.toString(),
     });
     _databaseRef
         .child('sabaaTest/quizzes/' +
-            pin.toString() +
+            widget.pin.toString() +
             '/questions/' +
             numOfQuestionsAdded.toString())
         .update({
@@ -152,14 +157,18 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       'options': [answer1, answer2, answer3, answer4],
     });
     _databaseRef
-        .child('sabaaTest/quizzes/' + pin.toString() + '/quizDetails')
+        .child('sabaaTest/quizzes/' + widget.pin.toString() + '/quizDetails')
         .update({
       'nameOfQuiz': nameOfQuiz,
       'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
       'numOfQuestions': numOfQuestions,
     });
+    print(widget.pin);
+    // update pin
+    if (widget.pin != null) {
+      updatePinDB(widget.pin!);
+    }
     // Clear the text fields
-
     correctOptionIndexController.clear();
     questionController.clear();
     answer1Controller.clear();
