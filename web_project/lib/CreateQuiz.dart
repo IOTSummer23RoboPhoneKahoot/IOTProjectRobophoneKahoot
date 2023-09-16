@@ -36,8 +36,8 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
   // final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   static TextEditingController numOfQuestionsController =
       TextEditingController();
-  static TextEditingController timeToAnswerPerQuestionController =
-      TextEditingController();
+  // static TextEditingController timeToAnswerPerQuestionController =
+  //     TextEditingController();
   static TextEditingController nameOfQuizController = TextEditingController();
   static int selectedTimeOptionIndex = 0,
       selectedTimeOption = 10; // Store the selected time option
@@ -96,6 +96,16 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
               },
               child: Text('Continue'),
             ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => introPage()),
+                );
+              },
+              child: Text('Cancel'),
+            ),
           ],
         ),
       ),
@@ -112,7 +122,6 @@ class QuizCreatorPage extends StatefulWidget {
 }
 
 class _QuizCreatorPageState extends State<QuizCreatorPage> {
-  int numOfQuestionsAdded = 0;
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   TextEditingController correctOptionIndexController = TextEditingController();
   TextEditingController questionController = TextEditingController();
@@ -120,10 +129,32 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   TextEditingController answer2Controller = TextEditingController();
   TextEditingController answer3Controller = TextEditingController();
   TextEditingController answer4Controller = TextEditingController();
+  int numOfQuestions = 0;
+  List<Map<String, dynamic>> quizQuestions = [];
+  List<Map<String, dynamic>> quizData = [];
 
-  List<Map<String, dynamic>> quizDataList = [];
+  void submitQuizData() {
+    _databaseRef.child('sabaaTest/quizzes/$generatedPin/quizID').update({
+      'quizID': generatedPin,
+    });
+    for (int i = 0; i < quizQuestions.length; i++) {
+      final questionData = quizQuestions[i];
+      _databaseRef
+          .child('sabaaTest/quizzes/$generatedPin/questions/$i')
+          .update(questionData);
+    }
+
+    // Update quiz details in the database
+    _databaseRef
+        .child('sabaaTest/quizzes/$generatedPin/quizDetails')
+        .update(quizData[0]); // Assuming there's only one set of quiz details
+    setState(() {
+      numOfQuestions = quizQuestions.length;
+    });
+    quizQuestions.clear();
+  }
+
   void addQuizData() {
-    // TODO: add the name of the quiz
     String timeToAnswerPerQuestion =
         _NumOfQuestionPageState.selectedTimeOption.toString();
     String nameOfQuiz = _NumOfQuestionPageState.nameOfQuizController.text;
@@ -135,31 +166,20 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     String answer2 = answer2Controller.text;
     String answer3 = answer3Controller.text;
     String answer4 = answer4Controller.text;
-
-    // Add the question and answer to the list
-    numOfQuestionsAdded += 1;
-    _databaseRef.child('sabaaTest/quizzes/' + generatedPin + '/quizID').update({
-      'quizID': generatedPin,
-    });
-    _databaseRef
-        .child('sabaaTest/quizzes/' +
-            generatedPin +
-            '/questions/' +
-            numOfQuestionsAdded.toString())
-        .update({
+    Map<String, dynamic> questionData = {
       'question': question,
       'correctOptionIndex': correctOptionIndex,
       'options': [answer1, answer2, answer3, answer4],
-    });
-    _databaseRef
-        .child('sabaaTest/quizzes/' + generatedPin + '/quizDetails')
-        .update({
+    };
+    Map<String, dynamic> quizDetailsData = {
       'nameOfQuiz': nameOfQuiz,
       'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
       'numOfQuestions': numOfQuestions,
-    });
+    };
+    // Add the question to the list
+    quizQuestions.add(questionData);
+    quizData.add(quizDetailsData);
     // Clear the text fields
-
     correctOptionIndexController.clear();
     questionController.clear();
     answer1Controller.clear();
@@ -208,7 +228,24 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
             ElevatedButton(
               onPressed: () {
                 addQuizData();
-                if (numOfQuestionsAdded >=
+              },
+              child: Text('add Question'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => introPage()),
+                );
+              },
+              child: Text('Cancel'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                submitQuizData(); // Call the submitQuizData function when the button is pressed
+                if (numOfQuestions >=
                     int.parse(_NumOfQuestionPageState
                         .numOfQuestionsController.text)) {
                   Navigator.push(
@@ -217,21 +254,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                   );
                 }
               },
-              child: Text('add Question'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (numOfQuestionsAdded >=
-                    int.parse(_NumOfQuestionPageState
-                        .numOfQuestionsController.text)) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => introPage()),
-                  );
-                }
-              },
-              child: Text('back to intro page'),
+              child: Text('Submit'),
             )
           ],
         ),
