@@ -39,6 +39,23 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
   static TextEditingController timeToAnswerPerQuestionController =
       TextEditingController();
   static TextEditingController nameOfQuizController = TextEditingController();
+  static int selectedTimeOptionIndex = 0,
+      selectedTimeOption = 10; // Store the selected time option
+
+  final List<int> timeOptions = [
+    10,
+    20,
+    30,
+    60
+  ]; // Define time options in seconds
+
+  void _handleTimeOptionChanged(int? value) {
+    setState(() {
+      selectedTimeOptionIndex = value ?? 0;
+      selectedTimeOption = timeOptions[selectedTimeOptionIndex];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,10 +75,16 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
               controller: numOfQuestionsController,
               decoration: InputDecoration(labelText: 'Number of questions:'),
             ),
-            TextField(
-              controller: timeToAnswerPerQuestionController,
-              decoration: InputDecoration(labelText: 'Time to answer:'),
-            ),
+            Text('Time to answer:'),
+            for (int i = 0; i < timeOptions.length; i++)
+              ListTile(
+                title: Text('${timeOptions[i]} seconds'),
+                leading: Radio<int>(
+                  value: i,
+                  groupValue: selectedTimeOptionIndex,
+                  onChanged: _handleTimeOptionChanged,
+                ),
+              ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
@@ -102,7 +125,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   void addQuizData() {
     // TODO: add the name of the quiz
     String timeToAnswerPerQuestion =
-        _NumOfQuestionPageState.timeToAnswerPerQuestionController.text;
+        _NumOfQuestionPageState.selectedTimeOption.toString();
     String nameOfQuiz = _NumOfQuestionPageState.nameOfQuizController.text;
     String numOfQuestions =
         _NumOfQuestionPageState.numOfQuestionsController.text;
@@ -115,11 +138,11 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 
     // Add the question and answer to the list
     numOfQuestionsAdded += 1;
-    _databaseRef.child('Robophone/quizzes/' + generatedPin + '/quizID').update({
+    _databaseRef.child('sabaaTest/quizzes/' + generatedPin + '/quizID').update({
       'quizID': generatedPin,
     });
     _databaseRef
-        .child('Robophone/quizzes/' +
+        .child('sabaaTest/quizzes/' +
             generatedPin +
             '/questions/' +
             numOfQuestionsAdded.toString())
@@ -129,7 +152,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       'options': [answer1, answer2, answer3, answer4],
     });
     _databaseRef
-        .child('Robophone/quizzes/' + generatedPin + '/quizDetails')
+        .child('sabaaTest/quizzes/' + generatedPin + '/quizDetails')
         .update({
       'nameOfQuiz': nameOfQuiz,
       'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
