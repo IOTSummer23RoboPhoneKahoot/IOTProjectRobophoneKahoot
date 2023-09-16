@@ -78,7 +78,7 @@ Stream<Quiz?> listenOnQuizByID(String quizID) {
 }
 
 Future<void> updateNextQuestionTime(
-    Quiz quiz, String questionIndex, int waitBeforeQuestion) async {
+    Quiz quiz, int questionIndex, int waitBeforeQuestion) async {
   final _databaseRef = FirebaseDatabase.instance.ref();
   DateTime questionTime =
       DateTime.now().add(Duration(seconds: waitBeforeQuestion));
