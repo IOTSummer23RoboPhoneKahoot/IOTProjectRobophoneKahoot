@@ -109,21 +109,6 @@ class Quiz {
     return correctAnswerIndex;
   }
 
-  double getAverageScore() {
-    int totalPlayersWithScores = 0; // Number of players with valid scores
-    double totalScore = players.fold(0, (sum, player) {
-      if (player.getScore() != null) {
-        totalPlayersWithScores += 1;
-        return sum + player.getScore();
-      }
-      return sum; // if player has null score, just return the current sum
-    });
-
-    return totalPlayersWithScores == 0
-        ? 0.0
-        : totalScore / totalPlayersWithScores;
-  }
-
   Map<String, int> getHistogramForQuestion(int questionID) {
     Map<String, int> histogram = {};
 
@@ -135,7 +120,7 @@ class Quiz {
             options: [],
             questionID: -1,
             questionText: "dummey")); // This is a dummy question
-    print("targe Qusetion" + targetQuestion.toString());
+
     // Initialize histogram with 0 for each option
     for (String option in targetQuestion.options) {
       histogram[option] = 0;

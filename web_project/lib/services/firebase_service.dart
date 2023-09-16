@@ -76,3 +76,24 @@ Stream<Quiz?> listenOnQuizByID(String quizID) {
     print('Error listening to quiz: $error');
   });
 }
+
+Future<void> updateNextQuestionTime(
+    Quiz quiz, String questionIndex, int waitBeforeQuestion) async {
+  final _databaseRef = FirebaseDatabase.instance.ref();
+  DateTime questionTime =
+      DateTime.now().add(Duration(seconds: waitBeforeQuestion));
+  String nextQuestionTime =
+      "${questionTime.hour}:${questionTime.minute}:${questionTime.second}";
+
+  Map<String, dynamic> updateData = {
+    "nextHourTime": questionTime.hour,
+    "nextMinuteTime": questionTime.minute,
+    "nextSecondTime": questionTime.second,
+    "nextQuestionTime": nextQuestionTime,
+    "currentQuestion": questionIndex
+  };
+
+  await _databaseRef
+      .child('Robophone/quizzes/${quiz.quizID}')
+      .update(updateData);
+}

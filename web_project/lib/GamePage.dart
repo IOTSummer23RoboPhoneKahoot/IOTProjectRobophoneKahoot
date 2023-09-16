@@ -3,10 +3,11 @@ import 'package:web_project/models/quiz.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:web_project/services/firebase_service.dart';
 import 'dart:async';
-import 'package:web_project/widgets/charts_stats.dart';
 import 'package:web_project/widgets/playersjoinWidget.dart';
 import 'package:web_project/widgets/endGameScreen.dart';
 import 'package:web_project/widgets/numAnswersEachQ.dart';
+import 'package:web_project/widgets/QestionAndAsnwers.dart';
+import 'package:web_project/widgets/QuestionsStats.dart';
 
 class GamePage extends StatefulWidget {
   final Quiz quiz;
@@ -279,10 +280,6 @@ class _GamePageState extends State<GamePage> {
   }
 
   Future _showNextQuestion() async {
-    print('THE CURRENT QUESTION IS' + _currentQuestionIndex.toString());
-    print('THE NUMBER OF  QUESTION IS' +
-        widget.quiz.quizDetails.numOfQuestions.toString());
-    // print(quiz?.getHistogramForQuestion(_currentQuestionIndex));
     if (_currentQuestionIndex <
         int.parse(widget.quiz.quizDetails.numOfQuestions)) {
       _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
@@ -295,30 +292,7 @@ class _GamePageState extends State<GamePage> {
         is_game_finished = true;
       });
     }
-    // } else {
-    //   print('GOT THE ELSE');
-    //   _questionText = "Quiz completed!";
-    //   _answers = [];
-    //   //TODO: here we got to the end of the quiz so we want to update the state
-    //   //to be end of the game and will show the summary widget,
-    //   // we could add a flag that give us indication for that.
-    // }
-
-    DateTime questionTime = DateTime.now().add(Duration(seconds: 15));
-    String nextQuestionTime =
-        "${questionTime.hour}:${questionTime.minute}:${questionTime.second}";
-
-    Map<String, dynamic> updateData = {
-      "nextHourTime": questionTime.hour,
-      "nextMinuteTime": questionTime.minute,
-      "nextSecondTime": questionTime.second,
-      "nextQuestionTime": nextQuestionTime,
-      "currentQuestion": _currentQuestionIndex
-    };
-
-    await _databaseRef
-        .child('Robophone/quizzes/${widget.quiz.quizID}')
-        .update(updateData);
+    await updateNextQuestionTime(widget.quiz, widget.quiz.quizID, 15);
   }
 
   void _endGame() {
@@ -328,74 +302,6 @@ class _GamePageState extends State<GamePage> {
       MaterialPageRoute(
         builder: (context) => EndGameScreen(quiz: widget.quiz),
       ),
-    );
-  }
-}
-
-class QuestionAndAnswers extends StatelessWidget {
-  final String questionText;
-  final List<String> answers;
-
-  QuestionAndAnswers({required this.questionText, required this.answers});
-
-  @override
-  Widget build(BuildContext context) {
-    if (questionText.isEmpty) {
-      return Text('Waiting for question...');
-    }
-
-    return Column(
-      children: <Widget>[
-        Text(questionText,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        SizedBox(height: 10.0),
-        ...answers
-            .map((answer) => Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(answer),
-                ))
-            .toList(),
-      ],
-    );
-  }
-}
-
-class QuestionStats extends StatelessWidget {
-  final Quiz quiz;
-  final int currentQuestionIndex;
-  final List<Player>? chartData;
-  final Map<String, int>? chartData2;
-  String? correctAnswer = '';
-  QuestionStats(
-      {required this.quiz,
-      required this.currentQuestionIndex,
-      required this.chartData,
-      required this.chartData2,
-      required this.correctAnswer});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          'Question ${currentQuestionIndex + 1} finished!',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 16.0),
-        Text(
-          'Quiz ID: ${quiz.quizID}',
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          'correct answer is: ${correctAnswer}',
-          style: TextStyle(fontSize: 18),
-        ),
-        // chart for players
-        ChartScreen(chartData: chartData),
-        // chart for questions
-        ChartScreen(chartData: chartData2),
-      ],
     );
   }
 }
