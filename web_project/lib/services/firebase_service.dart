@@ -83,13 +83,15 @@ Future<String?> fetchPin() async {
   }
 }
 
-Future<void> updatePin(String newPin) async {
+Future<void> updatePin(String? newPin) async {
   final _databaseRef = FirebaseDatabase.instance.ref();
 
   try {
     // Update the value at the specified path
-    int pin = int.parse(newPin) + 1;
-    await _databaseRef.child('sabaaTest/bigPinNum').set(pin);
+    if (newPin != null) {
+      int pin = int.parse(newPin) + 1;
+      await _databaseRef.child('sabaaTest/bigPinNum').set(pin.toString());
+    }
   } catch (e) {
     print('Error updating pin: $e');
     throw Exception('Failed to update the pin');
