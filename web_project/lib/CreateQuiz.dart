@@ -33,15 +33,12 @@ class NumOfQuestionPage extends StatefulWidget {
 }
 
 class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
-  // final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   static TextEditingController numOfQuestionsController =
       TextEditingController();
-  // static TextEditingController timeToAnswerPerQuestionController =
-  //     TextEditingController();
   static TextEditingController nameOfQuizController = TextEditingController();
-  static int selectedTimeOptionIndex = 0,
-      selectedTimeOption = 10; // Store the selected time option
 
+  // Store the selected time option
+  static int selectedTimeOptionIndex = 0, selectedTimeOption = 10;
   final List<int> timeOptions = [
     10,
     20,
@@ -60,22 +57,23 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz Creator'),
+        title: const Text('Quiz Creator'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextField(
               controller: nameOfQuizController,
-              decoration: InputDecoration(labelText: 'Name of the quiz:'),
+              decoration: const InputDecoration(labelText: 'Name of the quiz:'),
             ),
             TextField(
               controller: numOfQuestionsController,
-              decoration: InputDecoration(labelText: 'Number of questions:'),
+              decoration:
+                  const InputDecoration(labelText: 'Number of questions:'),
             ),
-            Text('Time to answer:'),
+            const Text('Time to answer:'),
             for (int i = 0; i < timeOptions.length; i++)
               ListTile(
                 title: Text('${timeOptions[i]} seconds'),
@@ -85,7 +83,7 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                   onChanged: _handleTimeOptionChanged,
                 ),
               ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 generatedPin = generateRandomPin();
@@ -94,9 +92,9 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                   MaterialPageRoute(builder: (context) => QuizCreatorPage()),
                 );
               },
-              child: Text('Continue'),
+              child: const Text('Continue'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -104,7 +102,7 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                   MaterialPageRoute(builder: (context) => introPage()),
                 );
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           ],
         ),
@@ -201,11 +199,11 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
           children: <Widget>[
             TextField(
               controller: questionController,
-              decoration: InputDecoration(labelText: 'Question'),
+              decoration: const InputDecoration(labelText: 'Question'),
             ),
             TextField(
               controller: answer1Controller,
-              decoration: InputDecoration(labelText: 'Answer 1'),
+              decoration: const InputDecoration(labelText: 'Answer 1'),
             ),
             TextField(
               controller: answer2Controller,
@@ -213,15 +211,15 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
             ),
             TextField(
               controller: answer3Controller,
-              decoration: InputDecoration(labelText: 'Answer 3'),
+              decoration: const InputDecoration(labelText: 'Answer 3'),
             ),
             TextField(
               controller: answer4Controller,
-              decoration: InputDecoration(labelText: 'Answer 4'),
+              decoration: const InputDecoration(labelText: 'Answer 4'),
             ),
             TextField(
               controller: correctOptionIndexController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: 'please write the correct answer number'),
             ),
             SizedBox(height: 20),
@@ -231,7 +229,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
               },
               child: Text('add Question'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -239,9 +237,9 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                   MaterialPageRoute(builder: (context) => introPage()),
                 );
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 submitQuizData(); // Call the submitQuizData function when the button is pressed
@@ -254,7 +252,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                   );
                 }
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             )
           ],
         ),
