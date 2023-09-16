@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:web_project/services/firebase_service.dart';
 import 'IntroPage.dart';
 import 'SummaryQuizPage.dart';
 import 'dart:math';
 
-String generatedPin = '0000';
-String generateRandomPin() {
+Future<String?> generatePin() async {
+  String? pin;
+
   // Generate a random 4-digit PIN
-  final Random random = Random();
-  final int min = 1000;
-  final int max = 9999;
-  final int randomNumber = min + random.nextInt(max - min);
-  return randomNumber.toString().padLeft(4, '0');
+  await fetchPin().then((fetchedPin) {
+    print('Pin fetched: $fetchedPin');
+    pin = fetchedPin;
+  });
+
+  return pin;
 }
 
 class CreateQuizApp extends StatelessWidget {
@@ -39,6 +42,7 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
   static TextEditingController timeToAnswerPerQuestionController =
       TextEditingController();
   static TextEditingController nameOfQuizController = TextEditingController();
+  String? pin;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,10 +69,20 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                generatedPin = generateRandomPin();
+                generatePin().then((generatedPin) {
+                  setState(() {
+                    pin = generatedPin;
+                    print('pin: $pin');
+                    if (pin != null) {
+                      pin = (int.parse(pin!) + 1).toString();
+                      print('pin: $pin');
+                    }
+                  });
+                });
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => QuizCreatorPage()),
+                  MaterialPageRoute(
+                      builder: (context) => QuizCreatorPage(pin: pin)),
                 );
               },
               child: Text('Continue'),
@@ -77,13 +91,12 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
         ),
       ),
     );
-    // numOfQuestionsController.clear();
-    // timeToAnswerPerQuestionController.clear();
-    // nameOfQuizController.clear();
   }
 }
 
 class QuizCreatorPage extends StatefulWidget {
+  String? pin;
+  QuizCreatorPage({this.pin});
   @override
   _QuizCreatorPageState createState() => _QuizCreatorPageState();
 }
@@ -97,6 +110,14 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   TextEditingController answer2Controller = TextEditingController();
   TextEditingController answer3Controller = TextEditingController();
   TextEditingController answer4Controller = TextEditingController();
+  String? pin;
+  void initState() {
+    super.initState();
+
+    setState(() {
+      pin = widget.pin;
+    });
+  }
 
   List<Map<String, dynamic>> quizDataList = [];
   void addQuizData() {
@@ -115,12 +136,14 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 
     // Add the question and answer to the list
     numOfQuestionsAdded += 1;
-    _databaseRef.child('Robophone/quizzes/' + generatedPin + '/quizID').update({
-      'quizID': generatedPin,
+    _databaseRef
+        .child('sabaaTest/quizzes/' + pin.toString() + '/quizID')
+        .update({
+      'quizID': pin.toString(),
     });
     _databaseRef
-        .child('Robophone/quizzes/' +
-            generatedPin +
+        .child('sabaaTest/quizzes/' +
+            pin.toString() +
             '/questions/' +
             numOfQuestionsAdded.toString())
         .update({
@@ -129,7 +152,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       'options': [answer1, answer2, answer3, answer4],
     });
     _databaseRef
-        .child('Robophone/quizzes/' + generatedPin + '/quizDetails')
+        .child('sabaaTest/quizzes/' + pin.toString() + '/quizDetails')
         .update({
       'nameOfQuiz': nameOfQuiz,
       'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
