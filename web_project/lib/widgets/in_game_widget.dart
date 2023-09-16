@@ -60,12 +60,12 @@ class _InGameWidgetState extends State<InGameWidget> {
                               answers: _answers,
                             ),
                           ),
-                          // Expanded(
-                          //   child: AnswersEachQuestion(
-                          //     quiz: widget.quiz,
-                          //     questionNum: _currentQuestionIndex,
-                          //   ),
-                          // ),
+                          Expanded(
+                            child: AnswersEachQuestion(
+                              quiz: widget.quiz,
+                              questionNum: _currentQuestionIndex,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -117,24 +117,11 @@ class _InGameWidgetState extends State<InGameWidget> {
   }
 
   Future<void> _showNextQuestion() async {
-    // Fetch the latest quiz data
-    Quiz? updatedQuiz = await fetchQuizByID(widget.quiz.quizID.toString());
-    if (updatedQuiz != null) {
-      chart1 = updatedQuiz.getTopPlayers(3);
-      chart2 = updatedQuiz.getHistogramForQuestion(_currentQuestionIndex + 1);
-      print('we are shwoing the quiz number:' +
-          (_currentQuestionIndex).toString());
-      print('Chart 1 is : ' + chart1.toString());
-      print('Chart 2 is : ' + chart2.toString());
-      if (_currentQuestionIndex < updatedQuiz.questions.length) {
-        _questionText =
-            updatedQuiz.questions[_currentQuestionIndex].questionText;
-        _answers = updatedQuiz.questions[_currentQuestionIndex].options;
-        print('questions Text is : ' + _questionText);
-        print('answers Text is : ' + _answers.toString());
-      }
-    } else {
-      // Handle the case when the updatedQuiz is null.
+    if (_currentQuestionIndex < widget.quiz.questions.length) {
+      _questionText = widget.quiz.questions[_currentQuestionIndex].questionText;
+      _answers = widget.quiz.questions[_currentQuestionIndex].options;
+      // print('questions Text is : ' + _questionText);
+      // print('answers Text is : ' + _answers.toString());
     }
   }
 

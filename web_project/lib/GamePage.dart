@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:web_project/services/firebase_service.dart';
-import 'dart:async';
-import 'package:web_project/widgets/playersjoinWidget.dart';
 import 'package:web_project/widgets/endGameScreen.dart';
-import 'package:web_project/widgets/numAnswersEachQ.dart';
-import 'package:web_project/widgets/QestionAndAsnwers.dart';
-import 'package:web_project/widgets/QuestionsStats.dart';
 import 'package:web_project/widgets/pre_game_widget.dart';
 import 'package:web_project/widgets/in_game_widget.dart';
 
@@ -21,37 +15,20 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  final _databaseRef = FirebaseDatabase.instance.ref();
-  String _questionText = '';
-  List<String> _answers = [];
   int _currentQuestionIndex = -1;
-  int _countdownTime = 2;
-  Timer? _countdownTimer;
-  int _questionDuration = 10;
-  Timer? _questionTimer;
   Quiz? quiz = quiz_temp;
-  List<Player>? chart1 = [];
-  Map<String, int>? chart2 = {};
-  String? correctAnswer = '';
-  bool is_game_finished = false;
   @override
   void initState() {
     super.initState();
-
     fetchQuizByID(widget.quiz.quizID.toString()).then((fetchedQuiz) {
       setState(() {
         quiz = fetchedQuiz;
-        chart1 = quiz?.getTopPlayers(3);
-        _questionDuration =
-            int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion) - 1;
       });
     });
   }
 
   @override
   void dispose() {
-    _countdownTimer?.cancel();
-    _questionTimer?.cancel();
     super.dispose();
   }
 
@@ -93,15 +70,6 @@ class _GamePageState extends State<GamePage> {
         );
       },
     );
-  }
-
-  void _startCountdown() async {
-    setState(() {
-      _questionDuration =
-          int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-      _currentQuestionIndex += 1;
-      _countdownTime = 2;
-    });
   }
 
   void _onGameStart() {

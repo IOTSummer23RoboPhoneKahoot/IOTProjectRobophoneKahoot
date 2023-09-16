@@ -15,16 +15,6 @@ class AnswersEachQuestion extends StatefulWidget {
 class _AnswersEachQuestionState extends State<AnswersEachQuestion> {
   int numAnswers = 0;
   List<Player> players = [];
-  Quiz quiz1 = Quiz(
-    quizID: '',
-    questions: [],
-    quizDetails: QuizDetails(
-      nameOfQuiz: '',
-      numOfQuestions: '',
-      timeToAnswerPerQuestion: '',
-    ),
-    players: [],
-  );
 
   StreamSubscription? _streamSubscription; // Add this line
 
@@ -37,17 +27,9 @@ class _AnswersEachQuestionState extends State<AnswersEachQuestion> {
         listenOnQuizByID(widget.quiz.quizID).listen((fetchedQuiz) {
       if (fetchedQuiz != null) {
         setState(() {
-          quiz1 = fetchedQuiz;
           players = fetchedQuiz.players;
+          numAnswers = fetchedQuiz.getNumOfPlayersAnswered(questionNum + 1);
         });
-        if (players.isNotEmpty) {
-          for (final player in players) {
-            int answer = player.answers[questionNum].answer;
-            if (answer != 0) {
-              numAnswers++;
-            }
-          }
-        }
       } else {
         // Handle the case where there was an error or no data was found
       }

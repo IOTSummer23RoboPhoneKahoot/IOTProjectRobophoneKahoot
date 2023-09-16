@@ -22,6 +22,21 @@ class Quiz {
     return 'Quiz(quizID: $quizID, questions: $questions, quizDetails: $quizDetails, players: $players)';
   }
 
+  int getNumOfPlayersAnswered(int questionID) {
+    int count = 0;
+
+    // Iterate over all players
+    for (Player player in players) {
+      // Check if the player has an answer for the given question
+      bool answered =
+          player.answers.any((answer) => answer.questionID == questionID);
+      if (answered) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   double getPlayerAverageResponseTime(String username) {
     Player? player = players.firstWhere(
       (p) => p.username == username,
