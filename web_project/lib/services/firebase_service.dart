@@ -58,6 +58,46 @@ Future<Quiz?> fetchQuizByID(String quizID) async {
   }
 }
 
+Future<String?> fetchPin() async {
+  final _databaseRef = FirebaseDatabase.instance.ref();
+
+  try {
+    DatabaseEvent event =
+        await _databaseRef.child('sabaaTest/bigPinNum').once();
+    DataSnapshot dataSnapshot = event.snapshot;
+
+    if (dataSnapshot.value != null) {
+      try {
+        print('pinnnnnnnnnnnnn');
+        print(dataSnapshot.value);
+        return dataSnapshot.value as String?;
+      } catch (e) {
+        print('Error parsing quiz: $e');
+        return null;
+      }
+    }
+    return null;
+  } catch (e) {
+    print('Error fetching quiz: $e');
+    return Future.error('Failed to load the quiz');
+  }
+}
+
+Future<void> updatePin(String? newPin) async {
+  final _databaseRef = FirebaseDatabase.instance.ref();
+
+  try {
+    // Update the value at the specified path
+    if (newPin != null) {
+      int pin = int.parse(newPin) + 1;
+      await _databaseRef.child('sabaaTest/bigPinNum').set(pin.toString());
+    }
+  } catch (e) {
+    print('Error updating pin: $e');
+    throw Exception('Failed to update the pin');
+  }
+}
+
 Stream<Quiz?> listenOnQuizByID(String quizID) {
   final _databaseRef = FirebaseDatabase.instance.ref();
 
