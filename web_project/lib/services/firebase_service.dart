@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:web_project/models/quiz.dart';
-import '../firebase_options.dart';
+import '../firebaseCreds/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:async';
 
@@ -75,4 +75,25 @@ Stream<Quiz?> listenOnQuizByID(String quizID) {
   }).handleError((error) {
     print('Error listening to quiz: $error');
   });
+}
+
+Future<void> updateNextQuestionTime(
+    Quiz quiz, int questionIndex, int waitBeforeQuestion) async {
+  final _databaseRef = FirebaseDatabase.instance.ref();
+  DateTime questionTime =
+      DateTime.now().add(Duration(seconds: waitBeforeQuestion));
+  String nextQuestionTime =
+      "${questionTime.hour}:${questionTime.minute}:${questionTime.second}";
+
+  Map<String, dynamic> updateData = {
+    "nextHourTime": questionTime.hour,
+    "nextMinuteTime": questionTime.minute,
+    "nextSecondTime": questionTime.second,
+    "nextQuestionTime": nextQuestionTime,
+    "currentQuestion": questionIndex
+  };
+
+  await _databaseRef
+      .child('Robophone/quizzes/${quiz.quizID}')
+      .update(updateData);
 }
