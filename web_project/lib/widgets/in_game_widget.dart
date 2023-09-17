@@ -51,19 +51,17 @@ class _InGameWidgetState extends State<InGameWidget> {
             : (_questionDuration > 0
                 ? Column(
                     children: <Widget>[
-                      Text('Time left: $_questionDuration seconds'),
                       Row(
                         children: <Widget>[
                           Expanded(
                             child: QuestionAndAnswers(
                               questionText: _questionText,
                               answers: _answers,
-                            ),
-                          ),
-                          Expanded(
-                            child: AnswersEachQuestion(
-                              quiz: widget.quiz,
-                              questionNum: _currentQuestionIndex,
+                              questionDuration: _questionDuration,
+                              answersNum: AnswersEachQuestion(
+                                quiz: widget.quiz,
+                                questionNum: _currentQuestionIndex,
+                              ).questionNum,
                             ),
                           ),
                         ],

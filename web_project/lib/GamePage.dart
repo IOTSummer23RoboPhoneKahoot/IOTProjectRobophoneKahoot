@@ -36,7 +36,8 @@ class _GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Robophone Kahoot Game'),
+        title: Text(
+            'Robophone Kahoot Game                                                                       $Quiz ID: ${widget.quiz.quizID}'),
       ),
       body: Center(
         child: _currentQuestionIndex == -1

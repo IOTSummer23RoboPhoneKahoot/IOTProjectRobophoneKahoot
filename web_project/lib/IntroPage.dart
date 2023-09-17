@@ -60,7 +60,7 @@ class _introPageState extends State<introPage> {
                           ),
                         );
                       },
-                      child: Text('Start Game'),
+                      child: Text('Show Quiz'),
                     ),
                     SizedBox(height: 10.0), // Add some space between cards
                   ],
