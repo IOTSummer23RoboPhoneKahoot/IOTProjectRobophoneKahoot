@@ -4,6 +4,7 @@ import 'package:web_project/services/firebase_service.dart';
 import 'package:web_project/widgets/endGameScreen.dart';
 import 'package:web_project/widgets/pre_game_widget.dart';
 import 'package:web_project/widgets/in_game_widget.dart';
+import 'package:routemaster/routemaster.dart';
 
 class GamePage extends StatefulWidget {
   final String quizId;
@@ -31,6 +32,13 @@ class _GamePageState extends State<GamePage> {
         title: Text(
             'Robophone Kahoot Game                                                                       $Quiz ID: ${widget.quizId}'),
         automaticallyImplyLeading: false, // This will remove the back arrow
+        leading: IconButton(
+          icon: Icon(Icons.home),
+          onPressed: () {
+            Routemaster.of(context).push('/');
+          },
+          tooltip: 'Go to Home',
+        ),
       ),
       body: Center(
         child: FutureBuilder<Quiz?>(
@@ -47,7 +55,6 @@ class _GamePageState extends State<GamePage> {
                     : !_postGame
                         ? InGameWidget(
                             quiz: fetchedQuiz,
-                            endGameCallback: _endGame,
                           )
                         : EndGameScreen(quizID: fetchedQuiz.quizID);
               } else if (snapshot.hasError) {
@@ -87,18 +94,5 @@ class _GamePageState extends State<GamePage> {
     setState(() {
       _currentQuestionIndex = 0; // Initialize to start game.
     });
-  }
-
-  void _endGame() {
-    // Navigate to the HighestScorePage with the quiz object
-    setState(() {
-      _postGame = true; // Initialize to start game.
-    });
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => EndGameScreen(quiz: widget.quiz),
-    //   ),
-    // );
   }
 }

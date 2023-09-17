@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'IntroPage.dart';
 import 'SummaryQuizPage.dart';
 import 'dart:math';
+import 'package:routemaster/routemaster.dart';
 
 String generatedPin = '0000';
 String generateRandomPin() {
@@ -44,6 +45,13 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Quiz Creator'),
+        leading: IconButton(
+          icon: Icon(Icons.home),
+          onPressed: () {
+            Routemaster.of(context).push('/');
+          },
+          tooltip: 'Go to Home',
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
