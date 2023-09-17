@@ -3,6 +3,7 @@ import 'IntroPage.dart';
 import 'package:flutter/material.dart';
 import 'CreateQuiz.dart';
 import 'GamePage.dart';
+import 'GameSummaryPage.dart';
 
 final routes = RouteMap(
   routes: {
@@ -10,9 +11,8 @@ final routes = RouteMap(
     '/createQuiz': (route) => MaterialPage(child: CreateQuizApp()),
     '/game/:quizId': (route) => MaterialPage(
         child: GamePage(
-            quizId: route.pathParameters['quizId']!)) // Using pathParameters
+            quizId: route.pathParameters['quizId']!)), // Using pathParameters
     '/gameSummary/:quizId': (route) => MaterialPage(
-        child: GamePage(
-            quizId: route.pathParameters['quizId']!))
+        child: GameSummaryPage(quizID: route.pathParameters['quizId']!))
   },
 );
