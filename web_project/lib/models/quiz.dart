@@ -22,14 +22,14 @@ class Quiz {
     return 'Quiz(quizID: $quizID, questions: $questions, quizDetails: $quizDetails, players: $players)';
   }
 
-  int getNumOfPlayersAnswered(int questionID) {
+  int getNumOfPlayersAnswered(int questionID, List<Player> players) {
     int count = 0;
 
     // Iterate over all players
     for (Player player in players) {
       // Check if the player has an answer for the given question
-      bool answered =
-          player.answers.any((answer) => answer.questionID == questionID);
+      bool answered = player.answers[questionID].answer > 0;
+      //print(answer.questionID);
       if (answered) {
         count++;
       }

@@ -49,7 +49,7 @@ class _GamePageState extends State<GamePage> {
                             quiz: fetchedQuiz,
                             endGameCallback: _endGame,
                           )
-                        : EndGameScreen(quiz: fetchedQuiz);
+                        : EndGameScreen(quizID: fetchedQuiz.quizID);
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {

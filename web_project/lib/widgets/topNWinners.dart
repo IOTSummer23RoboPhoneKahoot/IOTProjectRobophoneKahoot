@@ -46,6 +46,14 @@ class _TopNWinnersState extends State<TopNWinners> {
     );
   }
 
+  String doubleFormat(double number) {
+    String formattedNumber = number.toStringAsFixed(2);
+    if (formattedNumber.endsWith('.00')) {
+      formattedNumber = formattedNumber.replaceAll('.00', '');
+    }
+    return formattedNumber;
+  }
+
   Widget buildWinnerPentagon(Player player, int place) {
     final double largestSize =
         90.0; // Define a constant size for the largest player
@@ -63,7 +71,7 @@ class _TopNWinnersState extends State<TopNWinners> {
               color: playerColor,
               child: Center(
                 child: Text(
-                  player.score.toString(),
+                  doubleFormat(player.score),
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,

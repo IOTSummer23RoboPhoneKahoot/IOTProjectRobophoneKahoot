@@ -11,6 +11,8 @@ final routes = RouteMap(
     '/game/:quizId': (route) => MaterialPage(
         child: GamePage(
             quizId: route.pathParameters['quizId']!)) // Using pathParameters
-    // Add other routes as needed
+    '/gameSummary/:quizId': (route) => MaterialPage(
+        child: GamePage(
+            quizId: route.pathParameters['quizId']!))
   },
 );

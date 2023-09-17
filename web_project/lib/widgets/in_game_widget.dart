@@ -61,12 +61,22 @@ class _InGameWidgetState extends State<InGameWidget> {
                               questionText: _questionText,
                               answers: _answers,
                               questionDuration: _questionDuration,
-                              answersNum: AnswersEachQuestion(
-                                quiz: widget.quiz,
-                                questionNum: _currentQuestionIndex,
-                              ).questionNum,
                             ),
                           ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                right: 20.0), // Add right margin
+                            child: AnswersEachQuestion(
+                              quizID: widget.quiz.quizID,
+                              questionNum: _currentQuestionIndex,
+                              //numAnswers: _answersNum, // Pass numAnswers here
+                            ),
+                          ),
+                          // Expanded(
+                          //     child: AnswersEachQuestion(
+                          //   quizID: widget.quiz.quizID,
+                          //   questionNum: _currentQuestionIndex,
+                          // )),
                         ],
                       ),
                     ],

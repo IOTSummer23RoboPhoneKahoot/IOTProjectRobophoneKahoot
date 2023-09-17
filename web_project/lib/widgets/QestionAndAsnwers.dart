@@ -4,12 +4,12 @@ class QuestionAndAnswers extends StatelessWidget {
   final String questionText;
   final List<String> answers;
   final int questionDuration;
-  final int answersNum;
+  //final int answersNum;
   QuestionAndAnswers(
       {required this.questionText,
       required this.answers,
-      required this.questionDuration,
-      required this.answersNum});
+      required this.questionDuration});
+  // required this.answersNum});
   @override
   Widget build(BuildContext context) {
     if (questionText.isEmpty) {
@@ -46,21 +46,26 @@ class QuestionAndAnswers extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(right: 20.0), // Add right margin
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    '$answersNum',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Text(
-                    'Answers',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.only(right: 20.0), // Add right margin
+            //   child: Column(
+            //     children: <Widget>[
+            //       Text(
+            //         '$answersNum',
+            //         style: TextStyle(fontSize: 20),
+            //       ),
+            //       Text(
+            //         'Answers',
+            //         style: TextStyle(fontSize: 20),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // Padding(
+            //   padding: EdgeInsets.only(right: 20.0), // Add right margin
+            //   child:
+            //       AnswersEachQuestion(), // Use the AnswersEachQuestion widget here
+            // ),
           ],
         ),
         SizedBox(
