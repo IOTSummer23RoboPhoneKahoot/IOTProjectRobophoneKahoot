@@ -21,8 +21,49 @@ class CreateQuizApp extends StatelessWidget {
       title: 'Quiz App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'Roboto', // Set the default font
       ),
       home: NumOfQuestionPage(),
+    );
+  }
+}
+
+class CustomRadioButton extends StatelessWidget {
+  final int value;
+  final int groupValue;
+  final ValueChanged<int?> onChanged;
+
+  CustomRadioButton({
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        onChanged(value);
+      },
+      child: Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.blue),
+        ),
+        alignment: Alignment.center,
+        child: groupValue == value
+            ? Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue,
+                ),
+              )
+            : null,
+      ),
     );
   }
 }
@@ -40,8 +81,8 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
   // Store the selected time option
   static int selectedTimeOptionIndex = 0, selectedTimeOption = 10;
   final List<int> timeOptions = [
-    10,
     20,
+    25,
     30,
     60
   ]; // Define time options in seconds
@@ -57,13 +98,17 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Creator'),
+        title: Text(
+          'Quiz Creator',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
+      body: Center(
+        child: Container(
+          width: 400, // Adjust the width as needed
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SizedBox(height: 20),
               TextField(
@@ -78,21 +123,41 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                 controller: numOfQuestionsController,
                 decoration: InputDecoration(
                   labelText: 'Number of questions:',
+                  labelStyle: TextStyle(
+                    // color: Colors.grey, // Set label text color
+                    fontSize: 14,
+                  ),
                   border: OutlineInputBorder(),
                 ),
               ),
               SizedBox(height: 20),
               Text(
                 'Time to answer:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.left,
               ),
+              SizedBox(height: 10),
               for (int i = 0; i < timeOptions.length; i++)
-                ListTile(
-                  title: Text('${timeOptions[i]} seconds'),
-                  leading: Radio<int>(
-                    value: i,
-                    groupValue: selectedTimeOptionIndex,
-                    onChanged: _handleTimeOptionChanged,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: Row(
+                    children: [
+                      CustomRadioButton(
+                        value: i,
+                        groupValue: selectedTimeOptionIndex,
+                        onChanged: _handleTimeOptionChanged,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        '${timeOptions[i]} seconds',
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               SizedBox(height: 20),
@@ -104,7 +169,10 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                     MaterialPageRoute(builder: (context) => QuizCreatorPage()),
                   );
                 },
-                child: Text('Continue'),
+                child: Text(
+                  'Continue',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -114,7 +182,10 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                     MaterialPageRoute(builder: (context) => introPage()),
                   );
                 },
-                child: Text('Cancel'),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ],
           ),
@@ -202,68 +273,69 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       appBar: AppBar(
         title: Text('Quiz Creator'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Center(
+      body: Center(
+        child: Container(
+          width: 400, // Adjust the width as needed
+          padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               SizedBox(height: 20),
               TextField(
                 controller: questionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Question',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: answer1Controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Answer 1',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: answer2Controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Answer 2',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: answer3Controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Answer 3',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: answer4Controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Answer 4',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: correctOptionIndexController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Please write the correct answer number',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   addQuizData();
                 },
-                child: Text('Add Question'),
+                child: const Text('Add Question'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   submitQuizData();
@@ -276,9 +348,9 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                     );
                   }
                 },
-                child: Text('Submit'),
+                child: const Text('Submit'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -286,7 +358,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                     MaterialPageRoute(builder: (context) => introPage()),
                   );
                 },
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
               ),
             ],
           ),
