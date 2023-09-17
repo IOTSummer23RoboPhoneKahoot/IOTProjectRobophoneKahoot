@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:web_project/services/firebase_service.dart';
+import 'dart:math';
 
 class TopNWinners extends StatefulWidget {
   final Quiz quiz;
@@ -35,26 +36,38 @@ class _TopNWinnersState extends State<TopNWinners> {
     });
   }
 
-  Widget buildWinnerPentagon(Player player, int place) {
-    // Calculate the size based on the player's score
-    double size =
-        5.0 + (player.score * 2.5); // You can adjust the factor (5.0) as needed
+  Color getRandomColor() {
+    final random = Random();
+    return Color.fromRGBO(
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+      1.0,
+    );
+  }
 
+  Widget buildWinnerPentagon(Player player, int place) {
+    final double largestSize =
+        90.0; // Define a constant size for the largest player
+    double size = largestSize -
+        (place - 1) * 10.0; // Calculate the size based on the player's place
+    final playerColor = getRandomColor();
     return Column(
       children: [
         Container(
-          width: size, // Adjust the size based on the player's score
-          height: size, // Adjust the size based on the player's score
+          width: size,
+          height: size,
           child: ClipPath(
-            clipper: MyPentagonClipper(), // Custom clip path for pentagon shape
+            clipper: MyPentagonClipper(),
             child: Container(
-              color: Colors.blue, // Change the color as needed
+              color: playerColor,
               child: Center(
                 child: Text(
                   player.score.toString(),
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -90,7 +103,7 @@ class _TopNWinnersState extends State<TopNWinners> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'TOP 3 WINNERS:',
+                  'TOP 3',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

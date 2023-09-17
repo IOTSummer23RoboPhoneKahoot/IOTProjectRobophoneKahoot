@@ -25,19 +25,28 @@ class _CorrectAnswersWidgetState extends State<CorrectAnswersWidget> {
     super.initState();
   }
 
-  // List<ChartData> computeCorrectAnswers() {
-  //   final Map<String, int> correctAnswerCounts =
-  //       widget.quiz.getQuestionCorrectAnswerCountMap();
-  //   final List<ChartData> chartData = [];
+  List<ChartData> computeAnswers() {
+    final Map<String, int> AnswerCounts =
+        widget.quiz.getQuestionCorrectAnswerCountMap();
+    final List<ChartData> chartData = [];
 
-  //   int index = 1;
-  //   for (var entry in correctAnswerCounts.entries) {
-  //     chartData.add(ChartData('Question $index', entry.value, Colors.blue));
-  //     index++;
-  //   }
+    int index = 1;
+    final random = Random(); // Create a random number generator
 
-  //   return chartData;
-  // }
+    for (var entry in AnswerCounts.entries) {
+      final Color randomColor = Color.fromRGBO(
+        random.nextInt(256), // Red
+        random.nextInt(256), // Green
+        random.nextInt(256), // Blue
+        1.0, // Alpha (opacity)
+      );
+
+      chartData.add(ChartData('Answer $index', entry.value, randomColor));
+      index++;
+    }
+
+    return chartData;
+  }
 
   List<ChartData> computeCorrectAnswers() {
     final Map<String, int> correctAnswerCounts =

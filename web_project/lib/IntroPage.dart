@@ -54,7 +54,7 @@ class _introPageState extends State<introPage> {
                             Routemaster.of(context)
                                 .push('/game/${quizzes[index].quizID}');
                           },
-                          child: Text('Start Game'),
+                          child: Text('Show Quiz'),
                         ),
                         SizedBox(height: 10.0), // Add some space between cards
                       ],

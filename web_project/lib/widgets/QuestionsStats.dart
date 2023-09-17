@@ -3,6 +3,7 @@ import 'package:web_project/models/quiz.dart';
 import 'package:web_project/services/firebase_service.dart';
 import 'dart:async';
 import 'package:web_project/widgets/charts_stats.dart';
+import 'package:web_project/widgets/topNWinners.dart';
 
 class QuestionStats extends StatefulWidget {
   final Quiz quiz;
@@ -59,7 +60,7 @@ class _QuestionStatsState extends State<QuestionStats> {
           style: TextStyle(fontSize: 18),
         ),
         Text(
-          'Correct answer is: ${widget.correctAnswer}',
+          'Correct answer is: ii', // ${widget.correctAnswer}',
           style: TextStyle(fontSize: 18),
         ),
         FutureBuilder<List<dynamic>>(
@@ -75,7 +76,10 @@ class _QuestionStatsState extends State<QuestionStats> {
 
               return Column(
                 children: [
-                  if (topPlayers != null) ChartScreen(chartData: topPlayers),
+                  if (topPlayers != null)
+                    TopNWinners(
+                        quiz:
+                            widget.quiz), //ChartScreen(chartData: topPlayers),
                   if (histogram != null) ChartScreen(chartData: histogram),
                 ],
               );
