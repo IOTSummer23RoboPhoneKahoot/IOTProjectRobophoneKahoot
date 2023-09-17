@@ -6,9 +6,9 @@ import 'package:web_project/widgets/pre_game_widget.dart';
 import 'package:web_project/widgets/in_game_widget.dart';
 
 class GamePage extends StatefulWidget {
-  final Quiz quiz;
+  final String quizId;
 
-  GamePage({required this.quiz});
+  GamePage({required this.quizId});
 
   @override
   _GamePageState createState() => _GamePageState();
@@ -16,16 +16,8 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   int _currentQuestionIndex = -1;
+  bool _postGame = false;
   Quiz? quiz = quiz_temp;
-  @override
-  void initState() {
-    super.initState();
-    fetchQuizByID(widget.quiz.quizID.toString()).then((fetchedQuiz) {
-      setState(() {
-        quiz = fetchedQuiz;
-      });
-    });
-  }
 
   @override
   void dispose() {
@@ -38,17 +30,36 @@ class _GamePageState extends State<GamePage> {
       appBar: AppBar(
         title: Text(
             'Robophone Kahoot Game                                                                       $Quiz ID: ${widget.quiz.quizID}'),
+        automaticallyImplyLeading: false, // This will remove the back arrow
+
       ),
       body: Center(
-        child: _currentQuestionIndex == -1
-            ? PreGameWidget(
-                quiz: widget.quiz,
-                onStartGame: _onGameStart,
-              )
-            : InGameWidget(
-                quiz: widget.quiz,
-                endGameCallback: _endGame,
-              ),
+        child: FutureBuilder<Quiz?>(
+          future: fetchQuizByID(widget.quizId),
+          builder: (BuildContext context, AsyncSnapshot<Quiz?> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData && snapshot.data != null) {
+                Quiz fetchedQuiz = snapshot.data!;
+                return _currentQuestionIndex == -1
+                    ? PreGameWidget(
+                        quiz: fetchedQuiz,
+                        onStartGame: _onGameStart,
+                      )
+                    : !_postGame
+                        ? InGameWidget(
+                            quiz: fetchedQuiz,
+                            endGameCallback: _endGame,
+                          )
+                        : EndGameScreen(quiz: fetchedQuiz);
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return Text('Quiz not found.');
+              }
+            }
+            return CircularProgressIndicator(); // show loader while waiting for data
+          },
+        ),
       ),
     );
   }
@@ -81,11 +92,14 @@ class _GamePageState extends State<GamePage> {
 
   void _endGame() {
     // Navigate to the HighestScorePage with the quiz object
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EndGameScreen(quiz: widget.quiz),
-      ),
-    );
+    setState(() {
+      _postGame = true; // Initialize to start game.
+    });
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => EndGameScreen(quiz: widget.quiz),
+    //   ),
+    // );
   }
 }

@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:web_project/widgets/numAnswersEachQ.dart';
 import 'package:web_project/widgets/QestionAndAsnwers.dart';
 import 'package:web_project/widgets/QuestionsStats.dart';
+import 'package:web_project/widgets/before_question_labeled_timer_widget.dart';
 
 class InGameWidget extends StatefulWidget {
   final Quiz quiz;
@@ -20,7 +21,7 @@ class _InGameWidgetState extends State<InGameWidget> {
   String _questionText = '';
   List<String> _answers = [];
   int _currentQuestionIndex = -1;
-  int _countdownTime = 2;
+  int _countdownTime = 15;
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
@@ -47,7 +48,10 @@ class _InGameWidgetState extends State<InGameWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         _countdownTime > 0
-            ? Text('Starting in: $_countdownTime seconds')
+            ? LabelledCountdownTimer(
+                duration: _countdownTime,
+                onDone: () {},
+              )
             : (_questionDuration > 0
                 ? Column(
                     children: <Widget>[
@@ -74,14 +78,17 @@ class _InGameWidgetState extends State<InGameWidget> {
                     correctAnswer: correctAnswer,
                   )),
         SizedBox(height: 20.0),
-        ElevatedButton(
-          onPressed: is_game_finished == false ? _startCountdown : _endGame,
-          child: (_countdownTime == 0 && _questionDuration == 0)
-              ? (is_game_finished == false
-                  ? Text("Show Next Question")
-                  : Text("Show Game Summary"))
-              : Container(),
-        )
+        (_countdownTime == 0 && _questionDuration == 0)
+            ? ElevatedButton(
+                onPressed:
+                    is_game_finished == false ? _startCountdown : _endGame,
+                child: (_countdownTime == 0 && _questionDuration == 0)
+                    ? (is_game_finished == false
+                        ? Text("Show Next Question")
+                        : Text("Show Game Summary"))
+                    : Container(),
+              )
+            : Container()
       ],
     );
   }
@@ -99,7 +106,7 @@ class _InGameWidgetState extends State<InGameWidget> {
     setState(() {
       _questionDuration =
           int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-      _countdownTime = 2;
+      _countdownTime = 15;
     });
 
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {

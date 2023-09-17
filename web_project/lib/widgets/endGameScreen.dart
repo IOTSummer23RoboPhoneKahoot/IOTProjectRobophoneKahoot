@@ -43,6 +43,7 @@ import 'package:web_project/widgets/topNWinners.dart';
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:web_project/widgets/feedbackWidget.dart';
+import 'package:web_project/services/firebase_service.dart';
 
 class EndGameScreen extends StatefulWidget {
   final Quiz quiz;
@@ -50,7 +51,7 @@ class EndGameScreen extends StatefulWidget {
   EndGameScreen({required this.quiz});
 
   @override
-  _EndGameScreen createState() => _EndGameScreen();
+  _EndGameScreenState createState() => _EndGameScreenState();
 }
 
 class _EndGameScreen extends State<EndGameScreen> {
@@ -67,6 +68,10 @@ class _EndGameScreen extends State<EndGameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure the quiz data is fetched before rendering the widgets
+    if (quiz == null) {
+      return Scaffold(body: CircularProgressIndicator());
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('End Game Screen'),
@@ -74,9 +79,10 @@ class _EndGameScreen extends State<EndGameScreen> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: widget.quiz.players.isEmpty
+          children: quiz!.players.isEmpty
               ? [Center(child: Text("There is no data to show"))]
               : [
+
                   // HighestScoreWidget(quiz: widget.quiz),
                   //  SizedBox(height: 10),
                   FastestPlayerWidget(quiz: widget.quiz),
@@ -96,6 +102,7 @@ class _EndGameScreen extends State<EndGameScreen> {
                       child: Text('Show Feedback'),
                     ),
                   ),
+
                 ],
         ),
       ),
