@@ -54,7 +54,7 @@ class EndGameScreen extends StatefulWidget {
   _EndGameScreenState createState() => _EndGameScreenState();
 }
 
-class _EndGameScreen extends State<EndGameScreen> {
+class _EndGameScreenState extends State<EndGameScreen> {
   // Function to navigate to the feedback screen
   void _navigateToFeedbackScreen() {
     // Use Navigator to push a new page onto the stack
@@ -69,7 +69,7 @@ class _EndGameScreen extends State<EndGameScreen> {
   @override
   Widget build(BuildContext context) {
     // Ensure the quiz data is fetched before rendering the widgets
-    if (quiz == null) {
+    if (widget.quiz == null) {
       return Scaffold(body: CircularProgressIndicator());
     }
     return Scaffold(
@@ -79,10 +79,9 @@ class _EndGameScreen extends State<EndGameScreen> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: quiz!.players.isEmpty
+          children: widget.quiz.players.isEmpty
               ? [Center(child: Text("There is no data to show"))]
               : [
-
                   // HighestScoreWidget(quiz: widget.quiz),
                   //  SizedBox(height: 10),
                   FastestPlayerWidget(quiz: widget.quiz),
@@ -102,7 +101,6 @@ class _EndGameScreen extends State<EndGameScreen> {
                       child: Text('Show Feedback'),
                     ),
                   ),
-
                 ],
         ),
       ),

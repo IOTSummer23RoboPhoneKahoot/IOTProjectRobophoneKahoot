@@ -29,9 +29,8 @@ class _GamePageState extends State<GamePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            'Robophone Kahoot Game                                                                       $Quiz ID: ${widget.quiz.quizID}'),
+            'Robophone Kahoot Game                                                                       $Quiz ID: ${widget.quizId}'),
         automaticallyImplyLeading: false, // This will remove the back arrow
-
       ),
       body: Center(
         child: FutureBuilder<Quiz?>(

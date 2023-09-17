@@ -28,16 +28,17 @@ class _QuestionStatsState extends State<QuestionStats> {
   }
 
   Future<List<dynamic>> fetchData() async {
+    print(' the current quiz id is:' + widget.quiz.quizID.toString());
     Quiz? updatedQuiz = await fetchQuizByID(widget.quiz.quizID.toString());
     List<Player>? chart1;
     Map<String, int>? chart2;
 
     if (updatedQuiz != null) {
       chart1 = updatedQuiz.getTopPlayers(3);
-      chart2 =
-          updatedQuiz.getHistogramForQuestion(widget.currentQuestionIndex + 1);
       print('we are shwoing the quiz number: [in stats]' +
           (widget.currentQuestionIndex + 1).toString());
+      chart2 =
+          updatedQuiz.getHistogramForQuestion(widget.currentQuestionIndex + 1);
       print('Chart 1 is [ in stats] : ' + chart1.toString());
       print('Chart 2 is [ in stats]: ' + chart2.toString());
       print(' the fetched quiz is [in stats] : ' + updatedQuiz.toString());
@@ -68,6 +69,7 @@ class _QuestionStatsState extends State<QuestionStats> {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasError) {
+                print('the erro is : ' + snapshot.error.toString());
                 return Text("Error fetching data.");
               }
 

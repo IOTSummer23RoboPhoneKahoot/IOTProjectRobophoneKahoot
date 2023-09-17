@@ -21,7 +21,7 @@ class _InGameWidgetState extends State<InGameWidget> {
   String _questionText = '';
   List<String> _answers = [];
   int _currentQuestionIndex = -1;
-  int _countdownTime = 15;
+  int _countdownTime = 10;
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
@@ -29,7 +29,6 @@ class _InGameWidgetState extends State<InGameWidget> {
   Map<String, int>? chart2 = {};
   String? correctAnswer = '';
   bool is_game_finished = false;
-
   @override
   void initState() {
     super.initState();
@@ -100,13 +99,13 @@ class _InGameWidgetState extends State<InGameWidget> {
 
   void _startCountdown() async {
     _currentQuestionIndex += 1; // Increment the index here
-    await updateNextQuestionTime(widget.quiz, _currentQuestionIndex, 15);
+    await updateNextQuestionTime(widget.quiz, _currentQuestionIndex, 10);
     await _showNextQuestion(); // Fetch the question here
 
     setState(() {
       _questionDuration =
           int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-      _countdownTime = 15;
+      _countdownTime = 10;
     });
 
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
