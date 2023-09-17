@@ -135,6 +135,18 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
       'numOfQuestions': numOfQuestions,
     });
+    Map<String, dynamic> updateData = {
+      "nextHourTime": 0,
+      "nextMinuteTime": 0,
+      "nextSecondTime": 0,
+      "nextQuestionTime": "",
+      "currentQuestion": 0
+    };
+// Mahmoud and Ruqyad : added this to intialize the properties above so we could
+// start the game(robophone assumes that before we start the game we already have
+// these values in the DB)
+    _databaseRef.child('Robophone/quizzes/${generatedPin}').update(updateData);
+
     // Clear the text fields
 
     correctOptionIndexController.clear();
