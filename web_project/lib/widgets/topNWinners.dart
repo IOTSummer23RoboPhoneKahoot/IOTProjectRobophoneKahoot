@@ -28,6 +28,7 @@ class _TopNWinnersState extends State<TopNWinners> {
   @override
   void initState() {
     super.initState();
+    print('the quiz in top winnder is:' + widget.quiz.toString());
     fetchQuizByID(widget.quiz.quizID).then((fetchedQuiz) {
       setState(() {
         quiz1 = fetchedQuiz ?? quiz1;

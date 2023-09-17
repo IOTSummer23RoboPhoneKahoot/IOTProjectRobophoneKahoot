@@ -43,54 +43,50 @@ class _QuestionStatsState extends State<QuestionStats> {
       print('Chart 2 is [ in stats]: ' + chart2.toString());
       print(' the fetched quiz is [in stats] : ' + updatedQuiz.toString());
     }
+    await Future.delayed(
+        const Duration(seconds: 5)); // Introducing a delay of 2 seconds
+
     return [chart1, chart2];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          'Question ${widget.currentQuestionIndex + 1} finished!',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 16.0),
-        Text(
-          'Quiz ID: ${widget.quiz.quizID}',
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          'Correct answer is: ii', // ${widget.correctAnswer}',
-          style: TextStyle(fontSize: 18),
-        ),
-        FutureBuilder<List<dynamic>>(
-          future: futureData,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                print('the erro is : ' + snapshot.error.toString());
-                return Text("Error fetching data.");
-              }
+    return FutureBuilder<List<dynamic>>(
+      future: futureData,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            print('the error is : ' + snapshot.error.toString());
+            return Text("Error fetching data.");
+          }
 
-              List<Player>? topPlayers = snapshot.data?[0];
-              Map<String, int>? histogram = snapshot.data?[1];
+          List<Player>? topPlayers = snapshot.data?[0];
+          Map<String, int>? histogram = snapshot.data?[1];
 
-              return Column(
-                children: [
-                  if (topPlayers != null)
-                    TopNWinners(
-                        quiz:
-                            widget.quiz), //ChartScreen(chartData: topPlayers),
-                  if (histogram != null) ChartScreen(chartData: histogram),
-                ],
-              );
-            } else {
-              return CircularProgressIndicator();
-            }
-          },
-        ),
-      ],
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Question ${widget.currentQuestionIndex + 1} finished!',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'Quiz ID: ${widget.quiz.quizID}',
+                style: TextStyle(fontSize: 18),
+              ),
+              Text(
+                'Correct answer is: ${widget.correctAnswer}',
+                style: TextStyle(fontSize: 18),
+              ),
+              if (topPlayers != null) TopNWinners(quiz: widget.quiz),
+              if (histogram != null) ChartScreen(chartData: histogram),
+            ],
+          );
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
     );
   }
 }
