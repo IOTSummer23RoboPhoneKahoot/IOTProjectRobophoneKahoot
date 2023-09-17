@@ -22,14 +22,14 @@ class Quiz {
     return 'Quiz(quizID: $quizID, questions: $questions, quizDetails: $quizDetails, players: $players)';
   }
 
-  int getNumOfPlayersAnswered(int questionID) {
+  int getNumOfPlayersAnswered(int questionID, List<Player> players) {
     int count = 0;
 
     // Iterate over all players
     for (Player player in players) {
       // Check if the player has an answer for the given question
-      bool answered =
-          player.answers.any((answer) => answer.questionID == questionID);
+      bool answered = player.answers[questionID].answer > 0;
+      //print(answer.questionID);
       if (answered) {
         count++;
       }
@@ -105,8 +105,8 @@ class Quiz {
             options: [],
             questionID: -1,
             questionText: "dummey"));
-    correctAnswer =
-        targetQuestion.options[int.parse(targetQuestion.correctOptionIndex)];
+    correctAnswer = targetQuestion
+        .options[int.parse(targetQuestion.correctOptionIndex) - 1];
 
     return correctAnswer;
   }
@@ -120,7 +120,7 @@ class Quiz {
             options: [],
             questionID: -1,
             questionText: "dummey"));
-    correctAnswerIndex = int.parse(targetQuestion.correctOptionIndex);
+    correctAnswerIndex = int.parse(targetQuestion.correctOptionIndex) - 1;
     return correctAnswerIndex;
   }
 
@@ -135,6 +135,9 @@ class Quiz {
             options: [],
             questionID: -1,
             questionText: "dummey")); // This is a dummy question
+    // print('in quiz.dart file the targe quistion is:' + questionID.toString());
+    // print(
+    // "in quiz.dart file the targe quistion is:" + targetQuestion.toString());
 
     // Initialize histogram with 0 for each option
     for (String option in targetQuestion.options) {
@@ -149,11 +152,11 @@ class Quiz {
               answer: -1,
               diffTime: -1,
               questionID: -1)); // This is a dummy answer
-
+      // print('the current player answer is;' + answerForQuestion.toString());
       if (answerForQuestion.answer != -1) {
         // Check against the dummy answer's value
         String answeredOption =
-            targetQuestion.options[answerForQuestion.answer - 1];
+            targetQuestion.options[answerForQuestion.answer];
         histogram[answeredOption] = (histogram[answeredOption] ?? 0) + 1;
       }
     }

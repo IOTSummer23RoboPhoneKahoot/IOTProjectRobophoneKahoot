@@ -97,3 +97,21 @@ Future<void> updateNextQuestionTime(
       .child('Robophone/quizzes/${quiz.quizID}')
       .update(updateData);
 }
+
+Future<void> updateFlutterLocalTime() async {
+  final _databaseRef = FirebaseDatabase.instance.ref();
+  DateTime currentTime = DateTime.now();
+  String formattedTime =
+      "${currentTime.hour}:${currentTime.minute}:${currentTime.second}";
+
+  Map<String, dynamic> updateTime = {
+    "flutterLocalTime": formattedTime,
+    "fluttterHour": currentTime.hour,
+    "fluttterMinutes": currentTime.minute,
+    "fluttterSeconds": currentTime.second
+  };
+
+  await _databaseRef
+      .child('Robophone/5669122872442880/flutterLocalTime')
+      .update(updateTime);
+}

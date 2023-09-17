@@ -28,6 +28,7 @@ class _TopNWinnersState extends State<TopNWinners> {
   @override
   void initState() {
     super.initState();
+    print('the quiz in top winnder is:' + widget.quiz.toString());
     fetchQuizByID(widget.quiz.quizID).then((fetchedQuiz) {
       setState(() {
         quiz1 = fetchedQuiz ?? quiz1;
@@ -44,6 +45,14 @@ class _TopNWinnersState extends State<TopNWinners> {
       random.nextInt(256),
       1.0,
     );
+  }
+
+  String doubleFormat(double number) {
+    String formattedNumber = number.toStringAsFixed(2);
+    if (formattedNumber.endsWith('.00')) {
+      formattedNumber = formattedNumber.replaceAll('.00', '');
+    }
+    return formattedNumber;
   }
 
   Widget buildWinnerPentagon(Player player, int place) {
@@ -63,7 +72,7 @@ class _TopNWinnersState extends State<TopNWinners> {
               color: playerColor,
               child: Center(
                 child: Text(
-                  player.score.toString(),
+                  doubleFormat(player.score),
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,

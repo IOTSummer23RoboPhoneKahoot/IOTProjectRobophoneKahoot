@@ -6,12 +6,13 @@ import 'package:web_project/widgets/numAnswersEachQ.dart';
 import 'package:web_project/widgets/QestionAndAsnwers.dart';
 import 'package:web_project/widgets/QuestionsStats.dart';
 import 'package:web_project/widgets/before_question_labeled_timer_widget.dart';
+import 'package:routemaster/routemaster.dart';
+import 'package:web_project/widgets/ShowQuestionWidget.dart';
 
 class InGameWidget extends StatefulWidget {
   final Quiz quiz;
-  final Function endGameCallback;
 
-  InGameWidget({required this.quiz, required this.endGameCallback});
+  InGameWidget({required this.quiz});
 
   @override
   _InGameWidgetState createState() => _InGameWidgetState();
@@ -21,7 +22,7 @@ class _InGameWidgetState extends State<InGameWidget> {
   String _questionText = '';
   List<String> _answers = [];
   int _currentQuestionIndex = -1;
-  int _countdownTime = 15;
+  int _countdownTime = 2;
   Timer? _countdownTimer;
   int _questionDuration = 10;
   Timer? _questionTimer;
@@ -29,7 +30,6 @@ class _InGameWidgetState extends State<InGameWidget> {
   Map<String, int>? chart2 = {};
   String? correctAnswer = '';
   bool is_game_finished = false;
-
   @override
   void initState() {
     super.initState();
@@ -53,24 +53,10 @@ class _InGameWidgetState extends State<InGameWidget> {
                 onDone: () {},
               )
             : (_questionDuration > 0
-                ? Column(
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: QuestionAndAnswers(
-                              questionText: _questionText,
-                              answers: _answers,
-                              questionDuration: _questionDuration,
-                              answersNum: AnswersEachQuestion(
-                                quiz: widget.quiz,
-                                questionNum: _currentQuestionIndex,
-                              ).questionNum,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                ? QuizGameWidget(
+                    quiz: widget.quiz,
+                    currentQuestionIndex: _currentQuestionIndex,
+                    duration: _questionDuration,
                   )
                 : QuestionStats(
                     quiz: widget.quiz,
@@ -100,13 +86,13 @@ class _InGameWidgetState extends State<InGameWidget> {
 
   void _startCountdown() async {
     _currentQuestionIndex += 1; // Increment the index here
-    await updateNextQuestionTime(widget.quiz, _currentQuestionIndex, 15);
+    await updateNextQuestionTime(widget.quiz, _currentQuestionIndex, 2);
     await _showNextQuestion(); // Fetch the question here
 
     setState(() {
       _questionDuration =
           int.parse(widget.quiz.quizDetails.timeToAnswerPerQuestion);
-      _countdownTime = 15;
+      _countdownTime = 2;
     });
 
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -134,6 +120,9 @@ class _InGameWidgetState extends State<InGameWidget> {
     _questionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_questionDuration > 0) {
+          print('qustion duration [in in_game_widget]' +
+              _questionDuration.toString() +
+              '\n');
           _questionDuration--;
         } else {
           timer.cancel();
@@ -152,6 +141,6 @@ class _InGameWidgetState extends State<InGameWidget> {
   }
 
   void _endGame() {
-    widget.endGameCallback();
+    Routemaster.of(context).push('/gameSummary/${widget.quiz.quizID}');
   }
 }

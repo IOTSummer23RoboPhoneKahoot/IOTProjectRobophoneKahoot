@@ -1,42 +1,3 @@
-// import 'package:web_project/widgets/fastestPlayerWidget.dart';
-// import 'package:web_project/widgets/correctEachQuestionWidget.dart';
-// import 'package:web_project/widgets/topNWinners.dart';
-// import 'package:flutter/material.dart';
-// import 'package:web_project/models/quiz.dart';
-
-// class EndGameScreen extends StatefulWidget {
-//   final Quiz quiz;
-
-//   EndGameScreen({required this.quiz});
-
-//   @override
-//   _EndGameScreen createState() => _EndGameScreen();
-// }
-
-// class _EndGameScreen extends State<EndGameScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('End Game Screen'),
-//       ),
-//       body: SingleChildScrollView(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.stretch,
-//           children: widget.quiz.players.isEmpty
-//               ? [Center(child: Text("There is no data to show"))]
-//               : [
-//                   FastestPlayerWidget(quiz: widget.quiz),
-//                   TopNWinners(quiz: widget.quiz),
-//                   SizedBox(height: 5),
-//                   CorrectAnswersWidget(quiz: widget.quiz),
-//                 ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:web_project/widgets/fastestPlayerWidget.dart';
 import 'package:web_project/widgets/correctEachQuestionWidget.dart';
 import 'package:web_project/widgets/topNWinners.dart';
@@ -45,67 +6,40 @@ import 'package:web_project/models/quiz.dart';
 import 'package:web_project/widgets/feedbackWidget.dart';
 import 'package:web_project/services/firebase_service.dart';
 
-class EndGameScreen extends StatefulWidget {
-  final Quiz quiz;
+class EndGameScreen extends StatelessWidget {
+  final String quizID;
 
-  EndGameScreen({required this.quiz});
-
-  @override
-  _EndGameScreenState createState() => _EndGameScreenState();
-}
-
-class _EndGameScreen extends State<EndGameScreen> {
-  // Function to navigate to the feedback screen
-  void _navigateToFeedbackScreen() {
-    // Use Navigator to push a new page onto the stack
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) =>
-            FeedbackPage(quiz: widget.quiz), // Use FeedbackScreen widget
-      ),
-    );
-  }
+  EndGameScreen({required this.quizID});
 
   @override
   Widget build(BuildContext context) {
-    // Ensure the quiz data is fetched before rendering the widgets
-    if (quiz == null) {
-      return Scaffold(body: CircularProgressIndicator());
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('End Game Screen'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: quiz!.players.isEmpty
-              ? [Center(child: Text("There is no data to show"))]
-              : [
-
-                  // HighestScoreWidget(quiz: widget.quiz),
-                  //  SizedBox(height: 10),
-                  FastestPlayerWidget(quiz: widget.quiz),
-                  TopNWinners(quiz: widget.quiz),
-                  SizedBox(height: 5),
-                  CorrectAnswersWidget(quiz: widget.quiz),
-                  // FastestPlayerWidget(quiz: widget.quiz),
-                  // SizedBox(height: 10),
-                  // TopNWinners(quiz: widget.quiz),
-                  // SizedBox(height: 10),
-                  // CorrectAnswersWidget(quiz: widget.quiz),
-                  SizedBox(height: 5), // Add some space
-                  Center(
-                    // Add the "Show Feedback" button here
-                    child: ElevatedButton(
-                      onPressed: _navigateToFeedbackScreen,
-                      child: Text('Show Feedback'),
-                    ),
-                  ),
-
-                ],
-        ),
-      ),
+    return FutureBuilder<Quiz?>(
+      future: fetchQuizByID(quizID),
+      builder: (BuildContext context, AsyncSnapshot<Quiz?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData && snapshot.data != null) {
+            Quiz fetchedQuiz = snapshot.data!;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: fetchedQuiz.players.isEmpty
+                  ? [Center(child: Text("There is no data to show"))]
+                  : [
+                      TopNWinners(quiz: fetchedQuiz),
+                      SizedBox(height: 5),
+                      CorrectAnswersWidget(quiz: fetchedQuiz),
+                      SizedBox(height: 5), // Add some space
+                    ],
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Center(child: Text('Quiz not found.'));
+          }
+        }
+        return Center(
+            child:
+                CircularProgressIndicator()); // Show loader while waiting for data.
+      },
     );
   }
 }
