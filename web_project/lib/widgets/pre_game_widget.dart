@@ -1,8 +1,8 @@
-// in widgets/pre_game_widget.dart
-
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
-import 'package:web_project/widgets/playersjoinWidget.dart';
+import 'package:web_project/widgets/quiz_details_widget.dart';
+import 'package:web_project/widgets/players_count_widget.dart';
+import 'package:web_project/widgets/players_list_widget.dart';
 
 class PreGameWidget extends StatefulWidget {
   final Quiz quiz;
@@ -17,45 +17,44 @@ class PreGameWidget extends StatefulWidget {
 class _PreGameWidgetState extends State<PreGameWidget> {
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Stack(
       children: [
-        Expanded(
-          flex: 3,
-          child: Align(
-            alignment: Alignment.topCenter,
+        // Players List on the Left (20% of screen width)
+        Align(
+          alignment: Alignment.topLeft,
+          child: FractionallySizedBox(
+            widthFactor: 0.2,
             child: Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    widget.quiz.quizDetails.nameOfQuiz,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8.0),
-                  Text(
-                      'Number of Questions: ${widget.quiz.quizDetails.numOfQuestions}'),
-                  Text(
-                      'Time per Question: ${widget.quiz.quizDetails.timeToAnswerPerQuestion} seconds'),
-                  Text('QuizPIN: ${widget.quiz.quizID}'),
-                  SizedBox(height: 10.0),
-                  ElevatedButton(
-                    onPressed: () => widget.onStartGame(),
-                    child: Text('Start Game'),
-                  ),
-                ],
+              padding: const EdgeInsets.only(top: 20.0, left: 30.0),
+              child: PlayersListWidget(quizID: widget.quiz.quizID),
+            ),
+          ),
+        ),
+
+        // Quiz Details in the Center (55% of screen width to account for spacing)
+        Align(
+          alignment: Alignment.topCenter,
+          child: FractionallySizedBox(
+            widthFactor: 0.55,
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
+              child: QuizDetailsWidget(
+                quiz: widget.quiz,
+                onStartGame: widget.onStartGame,
               ),
             ),
           ),
         ),
-        Expanded(
-          flex: 3,
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Container(
-              constraints: BoxConstraints(maxHeight: 300.0),
-              child: PlayerListScreen(quiz: widget.quiz),
+
+        // Player Count on the Top Right (20% of screen width)
+        Align(
+          alignment: Alignment.topRight,
+          child: FractionallySizedBox(
+            widthFactor: 0.2,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0, right: 30.0),
+              child: PlayerCountWidget(quizID: widget.quiz.quizID),
             ),
           ),
         ),

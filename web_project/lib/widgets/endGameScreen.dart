@@ -4,6 +4,7 @@ import 'package:web_project/widgets/correctEachQuestionWidget.dart';
 import 'package:web_project/widgets/topNWinners.dart';
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
+import 'package:web_project/services/firebase_service.dart';
 
 class EndGameScreen extends StatefulWidget {
   final Quiz quiz;
@@ -11,12 +12,28 @@ class EndGameScreen extends StatefulWidget {
   EndGameScreen({required this.quiz});
 
   @override
-  _EndGameScreen createState() => _EndGameScreen();
+  _EndGameScreenState createState() => _EndGameScreenState();
 }
 
-class _EndGameScreen extends State<EndGameScreen> {
+class _EndGameScreenState extends State<EndGameScreen> {
+  Quiz? quiz; // Declare a nullable quiz variable here
+
+  @override
+  void initState() {
+    super.initState();
+    fetchQuizByID(widget.quiz.quizID.toString()).then((fetchedQuiz) {
+      setState(() {
+        quiz = fetchedQuiz;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Ensure the quiz data is fetched before rendering the widgets
+    if (quiz == null) {
+      return Scaffold(body: CircularProgressIndicator());
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('End Game Screen'),
@@ -24,16 +41,16 @@ class _EndGameScreen extends State<EndGameScreen> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: widget.quiz.players.isEmpty
+          children: quiz!.players.isEmpty
               ? [Center(child: Text("There is no data to show"))]
               : [
-                  HighestScoreWidget(quiz: widget.quiz),
+                  HighestScoreWidget(quiz: quiz!),
                   SizedBox(height: 10),
-                  FastestPlayerWidget(quiz: widget.quiz),
+                  FastestPlayerWidget(quiz: quiz!),
                   SizedBox(height: 10),
-                  TopNWinners(quiz: widget.quiz),
+                  TopNWinners(quiz: quiz!),
                   SizedBox(height: 10),
-                  CorrectAnswersWidget(quiz: widget.quiz),
+                  CorrectAnswersWidget(quiz: quiz!),
                 ],
         ),
       ),
