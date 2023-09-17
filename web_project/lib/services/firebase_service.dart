@@ -104,7 +104,14 @@ Future<void> updateFlutterLocalTime() async {
   String formattedTime =
       "${currentTime.hour}:${currentTime.minute}:${currentTime.second}";
 
-  Map<String, dynamic> updateTime = {"flutterLocalTime": formattedTime};
+  Map<String, dynamic> updateTime = {
+    "flutterLocalTime": formattedTime,
+    "fluttterHour": currentTime.hour,
+    "fluttterMinutes": currentTime.minute,
+    "fluttterSeconds": currentTime.second
+  };
 
-  await _databaseRef.child('Robophone/flutterLocalTime').update(updateTime);
+  await _databaseRef
+      .child('Robophone/5669122872442880/flutterLocalTime')
+      .update(updateTime);
 }
