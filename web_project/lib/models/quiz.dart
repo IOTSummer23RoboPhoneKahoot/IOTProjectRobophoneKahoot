@@ -37,6 +37,17 @@ class Quiz {
     return count;
   }
 
+  List<int> getNumAnsweredOptions(int questionID, List<Player> players) {
+    List<int> optionsList = [0, 0, 0, 0];
+    // Iterate over all players
+    for (Player player in players) {
+      // Check if the player has an answer for the given question
+      int answered = player.answers[questionID].answer;
+      if (answered > 0) optionsList[answered - 1]++;
+    }
+    return optionsList;
+  }
+
   double getPlayerAverageResponseTime(String username) {
     Player? player = players.firstWhere(
       (p) => p.username == username,
@@ -111,6 +122,10 @@ class Quiz {
     return correctAnswer;
   }
 
+  List<Question> questionsList() {
+    return questions;
+  }
+
   int getCorrectAnswerIndex(int questionID) {
     int correctAnswerIndex;
     Question? targetQuestion = questions.firstWhere(
@@ -163,6 +178,84 @@ class Quiz {
 
     return histogram;
   }
+
+  Map<int, int> getHistogramForQuestion2(int questionID) {
+    Map<int, int> histogram = {};
+
+    // Get the target question
+    Question? targetQuestion = questions.firstWhere(
+        (q) => q.questionID == questionID,
+        orElse: () => Question(
+            correctOptionIndex: '-1',
+            options: [],
+            questionID: -1,
+            questionText: "dummy")); // This is a dummy question
+
+    // Initialize histogram with 0 for each option index
+    for (int i = 0; i < targetQuestion.options.length; i++) {
+      histogram[i] = 0;
+    }
+
+    // Iterate over players' answers and update histogram
+    for (Player player in players) {
+      Answer? answerForQuestion = player.answers.firstWhere(
+          (a) => a.questionID == questionID,
+          orElse: () => Answer(
+              answer: -1,
+              diffTime: -1,
+              questionID: -1)); // This is a dummy answer
+
+      if (answerForQuestion.answer != -1) {
+        // Check against the dummy answer's value
+        histogram[answerForQuestion.answer] =
+            (histogram[answerForQuestion.answer] ?? 0) + 1;
+      }
+    }
+
+    return histogram;
+  }
+
+  // Map<int, int> getHistogramForQuestion2(int questionID) {
+  //   Map<int, int> histogram = {};
+
+  //   // Get the target question
+  //   Question? targetQuestion = questions.firstWhere(
+  //       (q) => q.questionID == questionID,
+  //       orElse: () => Question(
+  //           correctOptionIndex: '-1',
+  //           options: [],
+  //           questionID: -1,
+  //           questionText: "dummey")); // This is a dummy question
+  //   // print('in quiz.dart file the targe quistion is:' + questionID.toString());
+  //   // print(
+  //   // "in quiz.dart file the targe quistion is:" + targetQuestion.toString());
+
+  //   // Initialize histogram with 0 for each option
+  //   for (String option in targetQuestion.options[option]) {
+  //     histogram[option] = 0;
+  //   }
+
+  //   // Iterate over players' answers and update histogram
+  //   for (Player player in players) {
+  //     Answer? answerForQuestion = player.answers.firstWhere(
+  //         (a) => a.questionID == questionID,
+  //         orElse: () => Answer(
+  //             answer: -1,
+  //             diffTime: -1,
+  //             questionID: -1)); // This is a dummy answer
+  //     // print('the current player answer is;' + answerForQuestion.toString());
+  //     if (answerForQuestion.answer != -1) {
+  //       // Check against the dummy answer's value
+  //       int optionNum = answerForQuestion.answer;
+  //       String answeredOption =
+  //           targetQuestion.options[answerForQuestion.answer];
+  //       histogram[answeredOption] = (histogram[answeredOption] ?? 0) + 1;
+  //       //histogram[optionNum] = (histogram[optionNum] ?? 0) + 1;
+  //     }
+  //   }
+
+  //   return histogram;
+  // }
 
   factory Quiz.fromMap(Map<String, dynamic> map) {
     return Quiz(

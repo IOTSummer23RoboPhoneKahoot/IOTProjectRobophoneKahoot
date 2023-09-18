@@ -11,7 +11,8 @@ class GameSummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Robophone Kahoot Game Summary'),
+        title: Text(
+            'Robophone Kahoot Game Summary                                                                                quizID: $quizID'),
         leading: IconButton(
           icon: Icon(Icons.home),
           onPressed: () {

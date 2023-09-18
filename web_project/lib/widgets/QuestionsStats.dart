@@ -53,6 +53,7 @@ class _QuestionStatsState extends State<QuestionStats> {
 
           List<Player>? topPlayers = snapshot.data?[0];
           Map<String, int>? histogram = snapshot.data?[1];
+          //Map<int, int> histogram2 = snapshot.data?[1];
 
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -68,10 +69,10 @@ class _QuestionStatsState extends State<QuestionStats> {
                 style: TextStyle(fontSize: 18),
               ),
               if (topPlayers != null) TopNWinners(quiz: widget.quiz),
-              if (histogram != null)
-                MyRectangleRow(
-                    histogramData:
-                        histogram), //ChartScreen(chartData: histogram),
+              if (histogram != null) ChartScreen(chartData: histogram),
+              // MyRectangleRow(
+              //     histogramData:
+              //         histogram2), //ChartScreen(chartData: histogram),
             ],
           );
         } else {

@@ -6,6 +6,7 @@ import 'package:web_project/widgets/QuestionsStats.dart';
 import 'package:web_project/widgets/before_question_labeled_timer_widget.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:web_project/widgets/ShowQuestionWidget.dart';
+import 'package:web_project/optionStatWidget.dart';
 
 class InGameWidget extends StatefulWidget {
   final Quiz quiz;
@@ -56,8 +57,14 @@ class _InGameWidgetState extends State<InGameWidget> {
                     currentQuestionIndex: _currentQuestionIndex,
                     duration: _questionDuration,
                   )
-                : QuestionStats(
-                    quiz: widget.quiz,
+                // : QuestionStats(
+                //     quiz: widget.quiz,
+                //     currentQuestionIndex: _currentQuestionIndex,
+                //   ),
+                : MyRectangleRow(
+                    quizID: widget.quiz.quizID,
+                    optionsList: widget.quiz.getNumAnsweredOptions(
+                        _currentQuestionIndex, widget.quiz.players),
                     currentQuestionIndex: _currentQuestionIndex,
                   )),
         SizedBox(height: 20.0),
