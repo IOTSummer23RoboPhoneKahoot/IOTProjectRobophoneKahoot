@@ -28,46 +28,6 @@ class CreateQuizApp extends StatelessWidget {
   }
 }
 
-class CustomRadioButton extends StatelessWidget {
-  final int value;
-  final int groupValue;
-  final ValueChanged<int?> onChanged;
-
-  CustomRadioButton({
-    required this.value,
-    required this.groupValue,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        onChanged(value);
-      },
-      child: Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.blue),
-        ),
-        alignment: Alignment.center,
-        child: groupValue == value
-            ? Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.blue,
-                ),
-              )
-            : null,
-      ),
-    );
-  }
-}
-
 class NumOfQuestionPage extends StatefulWidget {
   @override
   _NumOfQuestionPageState createState() => _NumOfQuestionPageState();
@@ -78,21 +38,9 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
       TextEditingController();
   static TextEditingController nameOfQuizController = TextEditingController();
 
-  // Store the selected time option
-  static int selectedTimeOptionIndex = 0, selectedTimeOption = 10;
-  final List<int> timeOptions = [
-    20,
-    25,
-    30,
-    60
-  ]; // Define time options in seconds
-
-  void _handleTimeOptionChanged(int? value) {
-    setState(() {
-      selectedTimeOptionIndex = value ?? 0;
-      selectedTimeOption = timeOptions[selectedTimeOptionIndex];
-    });
-  }
+  // Store the selected option
+  static int selectedOptionIndex = 0;
+  static final List<String> options = ['20', '25', '30', '60'];
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +72,6 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                 decoration: InputDecoration(
                   labelText: 'Number of questions:',
                   labelStyle: TextStyle(
-                    // color: Colors.grey, // Set label text color
                     fontSize: 14,
                   ),
                   border: OutlineInputBorder(),
@@ -132,7 +79,7 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
               ),
               SizedBox(height: 20),
               Text(
-                'Time to answer:',
+                'Select an option:',
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
@@ -140,26 +87,24 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
                 textAlign: TextAlign.left,
               ),
               SizedBox(height: 10),
-              for (int i = 0; i < timeOptions.length; i++)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Row(
-                    children: [
-                      CustomRadioButton(
-                        value: i,
-                        groupValue: selectedTimeOptionIndex,
-                        onChanged: _handleTimeOptionChanged,
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        '${timeOptions[i]} seconds',
-                        style: TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
+              Row(
+                children: [
+                  DropdownButton<int>(
+                    value: selectedOptionIndex,
+                    onChanged: (int? value) {
+                      setState(() {
+                        selectedOptionIndex = value!;
+                      });
+                    },
+                    items: options.asMap().entries.map((entry) {
+                      return DropdownMenuItem<int>(
+                        value: entry.key,
+                        child: Text(entry.value + ' seconds'),
+                      );
+                    }).toList(),
                   ),
-                ),
+                ],
+              ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -202,7 +147,7 @@ class QuizCreatorPage extends StatefulWidget {
 
 class _QuizCreatorPageState extends State<QuizCreatorPage> {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
-  TextEditingController correctOptionIndexController = TextEditingController();
+  //TextEditingController correctOptionIndexController = TextEditingController();
   TextEditingController questionController = TextEditingController();
   TextEditingController answer1Controller = TextEditingController();
   TextEditingController answer2Controller = TextEditingController();
@@ -211,15 +156,19 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   int numOfQuestions = 0;
   List<Map<String, dynamic>> quizQuestions = [];
   List<Map<String, dynamic>> quizData = [];
+  final List<int> correctAnswerOptions = [1, 2, 3, 4];
 
+  // Variable to store the selected correct answer number
+  int selectedCorrectAnswer = 1;
   void submitQuizData() {
     _databaseRef.child('sabaaTest/quizzes/$generatedPin/quizID').update({
       'quizID': generatedPin,
     });
     for (int i = 0; i < quizQuestions.length; i++) {
       final questionData = quizQuestions[i];
+      int questionNum = i + 1;
       _databaseRef
-          .child('sabaaTest/quizzes/$generatedPin/questions/$i')
+          .child('sabaaTest/quizzes/$generatedPin/questions/$questionNum')
           .update(questionData);
     }
 
@@ -234,12 +183,14 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   }
 
   void addQuizData() {
-    String timeToAnswerPerQuestion =
-        _NumOfQuestionPageState.selectedTimeOption.toString();
+    String timeToAnswerPerQuestion = _NumOfQuestionPageState
+        .options[_NumOfQuestionPageState.selectedOptionIndex]
+        .toString();
     String nameOfQuiz = _NumOfQuestionPageState.nameOfQuizController.text;
     String numOfQuestions =
         _NumOfQuestionPageState.numOfQuestionsController.text;
-    String correctOptionIndex = correctOptionIndexController.text;
+    String correctOptionIndex =
+        correctAnswerOptions[selectedCorrectAnswer].toString();
     String question = questionController.text;
     String answer1 = answer1Controller.text;
     String answer2 = answer2Controller.text;
@@ -259,7 +210,6 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     quizQuestions.add(questionData);
     quizData.add(quizDetailsData);
     // Clear the text fields
-    correctOptionIndexController.clear();
     questionController.clear();
     answer1Controller.clear();
     answer2Controller.clear();
@@ -321,12 +271,27 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              TextField(
-                controller: correctOptionIndexController,
-                decoration: const InputDecoration(
-                  labelText: 'Please write the correct answer number',
-                  border: OutlineInputBorder(),
+              const Text(
+                'Select the correct answer option:',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.left,
+              ),
+              DropdownButton<int>(
+                value: selectedCorrectAnswer,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedCorrectAnswer = value!;
+                  });
+                },
+                items: correctAnswerOptions.map((int option) {
+                  return DropdownMenuItem<int>(
+                    value: option,
+                    child: Text('Answer $option'),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
