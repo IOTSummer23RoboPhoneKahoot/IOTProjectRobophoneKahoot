@@ -150,18 +150,19 @@ class _EditQuizDetailsState extends State<EditQuizDetails> {
         'numOfQuestions': numOfQuestions,
       };
 
-    _databaseRef
-        .child(
-            'Robophone/5669122872442880/quizzes/${widget.quiz.quizID}/quizDetails')
-        .update(quizDetailsData)
-        .then((_) {
-      if (numOfQuestions != widget.quiz.quizDetails.numOfQuestions) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditQuiz(
-              quiz: widget.quiz,
-              numberOfQuestionsToEdit: int.parse(numOfQuestions),
+      _databaseRef
+          .child(
+              'Robophone/5669122872442880/quizzes/${widget.quiz.quizID}/quizDetails')
+          .update(quizDetailsData)
+          .then((_) {
+        if (numOfQuestions != widget.quiz.quizDetails.numOfQuestions) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditQuiz(
+                quiz: widget.quiz,
+                numberOfQuestionsToEdit: int.parse(numOfQuestions),
+              ),
             ),
           );
         }

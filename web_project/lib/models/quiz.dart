@@ -191,10 +191,10 @@ class Quiz {
 }
 
 class Question {
-  final String correctOptionIndex;
-  final List<String> options;
-  final int questionID;
-  final String questionText;
+  String correctOptionIndex;
+  List<String> options;
+  int questionID;
+  String questionText;
 
   Question({
     required this.correctOptionIndex,
@@ -206,6 +206,15 @@ class Question {
   @override
   String toString() {
     return 'Question(questionID: $questionID, questionText: $questionText, correctOptionIndex: $correctOptionIndex, options: $options)';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'questionText': questionText,
+      'options': options,
+      'correctOptionIndex': correctOptionIndex,
+      'questionID': questionID,
+    };
   }
 
   factory Question.fromMap(Map<String, dynamic> map, int index) {

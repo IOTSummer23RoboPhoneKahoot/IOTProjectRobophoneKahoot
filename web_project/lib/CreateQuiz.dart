@@ -169,7 +169,6 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   int selectedCorrectAnswer = 1;
 
   void submitQuizData() {
-
     if (quizQuestions.isEmpty) {
       showDialog(
         context: context,
@@ -200,12 +199,8 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       "currentQuestion": 0
     };
 
-    _databaseRef.child('Robophone/quizzes/${generatedPin}').update(updateData);
+    _databaseRef.child('Robophone/quizzes/$generatedPin').update(updateData);
     _databaseRef.child('sabaaTest/quizzes/$generatedPin/quizID').update({
-
-    _databaseRef
-        .child('Robophone/5669122872442880/quizzes/$generatedPin/quizID')
-        .update({
       'quizID': generatedPin,
     });
     for (int i = 0; i < quizQuestions.length; i++) {
@@ -224,20 +219,6 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     setState(() {
       numOfQuestions = quizQuestions.length;
     });
-
-    Map<String, dynamic> updateData = {
-      "nextHourTime": 0,
-      "nextMinuteTime": 0,
-      "nextSecondTime": 0,
-      "nextQuestionTime": "",
-      "currentQuestion": 0
-    };
-// Mahmoud and Ruqyad : added this to intialize the properties above so we could
-// start the game(robophone assumes that before we start the game we already have
-// these values in the DB)
-    _databaseRef
-        .child('Robophone/5669122872442880/quizzes/${generatedPin}')
-        .update(updateData);
     quizQuestions.clear();
   }
 
@@ -248,8 +229,6 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     String nameOfQuiz = _NumOfQuestionPageState.nameOfQuizController.text;
     String numOfQuestions =
         _NumOfQuestionPageState.numOfQuestionsController.text;
-    // String correctOptionIndex =
-    // correctAnswerOptions[selectedCorrectAnswer].toString();
     String correctOptionIndex = selectedCorrectAnswer.toString();
     String question = questionController.text;
     String answer1 = answer1Controller.text;
@@ -401,7 +380,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                       });
                       addQuizData();
                     } else {
-                      showCustomAlert(context, "YOU Cannot ADD more Qeustons");
+                      showCustomAlert(context, "YOU Cannot ADD more Questions");
                     }
                   },
                   child: const Text('Add Question'),
@@ -419,7 +398,10 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                       submitQuizData();
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => summaryPage()),
+                        MaterialPageRoute(
+                            builder: (context) => summaryPage(
+                                  editPage: false,
+                                )),
                       );
                     }
                   },
