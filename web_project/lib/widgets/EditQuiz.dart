@@ -194,6 +194,7 @@ class _EditQuizState extends State<EditQuiz> {
     );
   }
 
+
   // Function to save all edited questions to the database
   void saveAllQuestions() {
     updateCurrentQuestion();
@@ -203,7 +204,7 @@ class _EditQuizState extends State<EditQuiz> {
         int questionID = i + 1;
         _databaseRef
             .child(
-                'sabaaTest/quizzes/${widget.quiz.quizID}/questions/$questionID')
+                'Robophone/5669122872442880/quizzes/${widget.quiz!.quizID}/questions/$questionID')
             .update(questionData.toMap());
       }
       Navigator.push(

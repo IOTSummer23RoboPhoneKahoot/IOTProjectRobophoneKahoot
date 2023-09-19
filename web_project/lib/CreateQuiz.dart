@@ -169,6 +169,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
   int selectedCorrectAnswer = 1;
 
   void submitQuizData() {
+
     if (quizQuestions.isEmpty) {
       showDialog(
         context: context,
@@ -201,23 +202,42 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 
     _databaseRef.child('Robophone/quizzes/${generatedPin}').update(updateData);
     _databaseRef.child('sabaaTest/quizzes/$generatedPin/quizID').update({
+
+    _databaseRef
+        .child('Robophone/5669122872442880/quizzes/$generatedPin/quizID')
+        .update({
       'quizID': generatedPin,
     });
     for (int i = 0; i < quizQuestions.length; i++) {
       final questionData = quizQuestions[i];
       int questionNum = i + 1;
       _databaseRef
-          .child('sabaaTest/quizzes/$generatedPin/questions/$questionNum')
+          .child(
+              'Robophone/5669122872442880/quizzes/$generatedPin/questions/$questionNum')
           .update(questionData);
     }
 
     // Update quiz details in the database
     _databaseRef
-        .child('sabaaTest/quizzes/$generatedPin/quizDetails')
+        .child('Robophone/5669122872442880/quizzes/$generatedPin/quizDetails')
         .update(quizData[0]); // Assuming there's only one set of quiz details
     setState(() {
       numOfQuestions = quizQuestions.length;
     });
+
+    Map<String, dynamic> updateData = {
+      "nextHourTime": 0,
+      "nextMinuteTime": 0,
+      "nextSecondTime": 0,
+      "nextQuestionTime": "",
+      "currentQuestion": 0
+    };
+// Mahmoud and Ruqyad : added this to intialize the properties above so we could
+// start the game(robophone assumes that before we start the game we already have
+// these values in the DB)
+    _databaseRef
+        .child('Robophone/5669122872442880/quizzes/${generatedPin}')
+        .update(updateData);
     quizQuestions.clear();
   }
 
@@ -228,8 +248,9 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     String nameOfQuiz = _NumOfQuestionPageState.nameOfQuizController.text;
     String numOfQuestions =
         _NumOfQuestionPageState.numOfQuestionsController.text;
-    String correctOptionIndex =
-        correctAnswerOptions[selectedCorrectAnswer].toString();
+    // String correctOptionIndex =
+    // correctAnswerOptions[selectedCorrectAnswer].toString();
+    String correctOptionIndex = selectedCorrectAnswer.toString();
     String question = questionController.text;
     String answer1 = answer1Controller.text;
     String answer2 = answer2Controller.text;
@@ -363,30 +384,47 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                 }).toList(),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  addQuizData();
-                },
-                child: const Text('Add Question'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  submitQuizData();
-                  if (numOfQuestions >=
-                      int.parse(_NumOfQuestionPageState
-                          .numOfQuestionsController.text)) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => summaryPage(
-                                editPage: false,
-                              )),
-                    );
-                  }
-                },
-                child: const Text('Submit'),
-              ),
+              if (numOfQuestions + 1 <
+                  int.parse(
+                      _NumOfQuestionPageState.numOfQuestionsController.text))
+                ElevatedButton(
+                  onPressed: () {
+                    print(
+                        "number of Questions is :" + numOfQuestions.toString());
+                    print("number of question to add " +
+                        _NumOfQuestionPageState.numOfQuestionsController.text);
+                    if (numOfQuestions <
+                        int.parse(_NumOfQuestionPageState
+                            .numOfQuestionsController.text)) {
+                      setState(() {
+                        numOfQuestions++;
+                      });
+                      addQuizData();
+                    } else {
+                      showCustomAlert(context, "YOU Cannot ADD more Qeustons");
+                    }
+                  },
+                  child: const Text('Add Question'),
+                )
+              else
+                ElevatedButton(
+                  onPressed: () {
+                    if (numOfQuestions + 1 >=
+                        int.parse(_NumOfQuestionPageState
+                            .numOfQuestionsController.text)) {
+                      setState(() {
+                        numOfQuestions++;
+                      });
+                      addQuizData();
+                      submitQuizData();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => summaryPage()),
+                      );
+                    }
+                  },
+                  child: const Text('Submit'),
+                ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -403,4 +441,24 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       ),
     );
   }
+}
+
+void showCustomAlert(BuildContext context, String message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Alert'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
