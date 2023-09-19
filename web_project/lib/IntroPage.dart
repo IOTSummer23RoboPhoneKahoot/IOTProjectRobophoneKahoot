@@ -3,6 +3,7 @@ import 'package:routemaster/routemaster.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:web_project/services/firebase_service.dart';
 import 'package:web_project/widgets/quiz_card.dart';
+import 'package:web_project/widgets/EditQuizDetails.dart';
 
 class introPage extends StatefulWidget {
   @override
@@ -56,7 +57,19 @@ class _introPageState extends State<introPage> {
                           },
                           child: Text('Show Quiz'),
                         ),
-                        SizedBox(height: 10.0), // Add some space between cards
+                        SizedBox(height: 10.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EditQuizDetails(quiz: quizzes[index]),
+                              ),
+                            );
+                          },
+                          child: Text('Edit Quiz'),
+                        ), // Add some space between ca // Add some space between cards
                       ],
                     );
                   },

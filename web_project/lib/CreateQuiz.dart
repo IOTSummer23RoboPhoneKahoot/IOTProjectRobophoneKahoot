@@ -22,6 +22,7 @@ class CreateQuizApp extends StatelessWidget {
       title: 'Quiz App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'Roboto', // Set the default font
       ),
       home: NumOfQuestionPage(),
     );
@@ -34,17 +35,22 @@ class NumOfQuestionPage extends StatefulWidget {
 }
 
 class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
-  // final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   static TextEditingController numOfQuestionsController =
       TextEditingController();
-  static TextEditingController timeToAnswerPerQuestionController =
-      TextEditingController();
   static TextEditingController nameOfQuizController = TextEditingController();
+
+  // Store the selected option
+  static int selectedOptionIndex = 0;
+  static final List<String> options = ['20', '25', '30', '60'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz Creator'),
+        title: Text(
+          'Quiz Creator',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
         leading: IconButton(
           icon: Icon(Icons.home),
           onPressed: () {
@@ -53,41 +59,92 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
           tooltip: 'Go to Home',
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextField(
-              controller: nameOfQuizController,
-              decoration: InputDecoration(labelText: 'Name of the quiz:'),
-            ),
-            TextField(
-              controller: numOfQuestionsController,
-              decoration: InputDecoration(labelText: 'Number of questions:'),
-            ),
-            TextField(
-              controller: timeToAnswerPerQuestionController,
-              decoration: InputDecoration(labelText: 'Time to answer:'),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                generatedPin = generateRandomPin();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => QuizCreatorPage()),
-                );
-              },
-              child: Text('Continue'),
-            ),
-          ],
+      body: Center(
+        child: Container(
+          width: 400, // Adjust the width as needed
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(height: 20),
+              TextField(
+                controller: nameOfQuizController,
+                decoration: InputDecoration(
+                  labelText: 'Name of the quiz:',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: numOfQuestionsController,
+                decoration: InputDecoration(
+                  labelText: 'Number of questions:',
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                  ),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Select an option:',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.left,
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  DropdownButton<int>(
+                    value: selectedOptionIndex,
+                    onChanged: (int? value) {
+                      setState(() {
+                        selectedOptionIndex = value!;
+                      });
+                    },
+                    items: options.asMap().entries.map((entry) {
+                      return DropdownMenuItem<int>(
+                        value: entry.key,
+                        child: Text(entry.value + ' seconds'),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  generatedPin = generateRandomPin();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => QuizCreatorPage()),
+                  );
+                },
+                child: Text(
+                  'Continue',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => introPage()),
+                  );
+                },
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
-    // numOfQuestionsController.clear();
-    // timeToAnswerPerQuestionController.clear();
-    // nameOfQuizController.clear();
   }
 }
 
@@ -97,52 +154,70 @@ class QuizCreatorPage extends StatefulWidget {
 }
 
 class _QuizCreatorPageState extends State<QuizCreatorPage> {
-  int numOfQuestionsAdded = 0;
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
-  TextEditingController correctOptionIndexController = TextEditingController();
+  //TextEditingController correctOptionIndexController = TextEditingController();
   TextEditingController questionController = TextEditingController();
   TextEditingController answer1Controller = TextEditingController();
   TextEditingController answer2Controller = TextEditingController();
   TextEditingController answer3Controller = TextEditingController();
   TextEditingController answer4Controller = TextEditingController();
+  int numOfQuestions = 0;
+  List<Map<String, dynamic>> quizQuestions = [];
+  List<Map<String, dynamic>> quizData = [];
+  final List<int> correctAnswerOptions = [1, 2, 3, 4];
 
-  List<Map<String, dynamic>> quizDataList = [];
+  // Variable to store the selected correct answer number
+  int selectedCorrectAnswer = 1;
+  void submitQuizData() {
+    _databaseRef.child('sabaaTest/quizzes/$generatedPin/quizID').update({
+      'quizID': generatedPin,
+    });
+    for (int i = 0; i < quizQuestions.length; i++) {
+      final questionData = quizQuestions[i];
+      int questionNum = i + 1;
+      _databaseRef
+          .child('sabaaTest/quizzes/$generatedPin/questions/$questionNum')
+          .update(questionData);
+    }
+
+    // Update quiz details in the database
+    _databaseRef
+        .child('sabaaTest/quizzes/$generatedPin/quizDetails')
+        .update(quizData[0]); // Assuming there's only one set of quiz details
+    setState(() {
+      numOfQuestions = quizQuestions.length;
+    });
+    quizQuestions.clear();
+  }
+
   void addQuizData() {
-    // TODO: add the name of the quiz
-    String timeToAnswerPerQuestion =
-        _NumOfQuestionPageState.timeToAnswerPerQuestionController.text;
+    String timeToAnswerPerQuestion = _NumOfQuestionPageState
+        .options[_NumOfQuestionPageState.selectedOptionIndex]
+        .toString();
     String nameOfQuiz = _NumOfQuestionPageState.nameOfQuizController.text;
     String numOfQuestions =
         _NumOfQuestionPageState.numOfQuestionsController.text;
-    String correctOptionIndex = correctOptionIndexController.text;
+    String correctOptionIndex =
+        correctAnswerOptions[selectedCorrectAnswer].toString();
     String question = questionController.text;
     String answer1 = answer1Controller.text;
     String answer2 = answer2Controller.text;
     String answer3 = answer3Controller.text;
     String answer4 = answer4Controller.text;
-
-    // Add the question and answer to the list
-    numOfQuestionsAdded += 1;
-    _databaseRef.child('Robophone/quizzes/' + generatedPin + '/quizID').update({
-      'quizID': generatedPin,
-    });
-    _databaseRef
-        .child('Robophone/quizzes/' +
-            generatedPin +
-            '/questions/' +
-            numOfQuestionsAdded.toString())
-        .update({
+    Map<String, dynamic> questionData = {
       'question': question,
       'correctOptionIndex': correctOptionIndex,
       'options': [answer1, answer2, answer3, answer4],
-    });
-    _databaseRef
-        .child('Robophone/quizzes/' + generatedPin + '/quizDetails')
-        .update({
+    };
+    Map<String, dynamic> quizDetailsData = {
       'nameOfQuiz': nameOfQuiz,
       'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
       'numOfQuestions': numOfQuestions,
-    });
+    };
+    // Add the question to the list
+    quizQuestions.add(questionData);
+    quizData.add(quizDetailsData);
+
     Map<String, dynamic> updateData = {
       "nextHourTime": 0,
       "nextMinuteTime": 0,
@@ -154,10 +229,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 // start the game(robophone assumes that before we start the game we already have
 // these values in the DB)
     _databaseRef.child('Robophone/quizzes/${generatedPin}').update(updateData);
-
     // Clear the text fields
-
-    correctOptionIndexController.clear();
     questionController.clear();
     answer1Controller.clear();
     answer2Controller.clear();
@@ -171,66 +243,110 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       appBar: AppBar(
         title: Text('Quiz Creator'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextField(
-              controller: questionController,
-              decoration: InputDecoration(labelText: 'Question'),
-            ),
-            TextField(
-              controller: answer1Controller,
-              decoration: InputDecoration(labelText: 'Answer 1'),
-            ),
-            TextField(
-              controller: answer2Controller,
-              decoration: InputDecoration(labelText: 'Answer 2'),
-            ),
-            TextField(
-              controller: answer3Controller,
-              decoration: InputDecoration(labelText: 'Answer 3'),
-            ),
-            TextField(
-              controller: answer4Controller,
-              decoration: InputDecoration(labelText: 'Answer 4'),
-            ),
-            TextField(
-              controller: correctOptionIndexController,
-              decoration: InputDecoration(
-                  labelText: 'please write the correct answer number'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                addQuizData();
-                if (numOfQuestionsAdded >=
-                    int.parse(_NumOfQuestionPageState
-                        .numOfQuestionsController.text)) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => summaryPage()),
+      body: Center(
+        child: Container(
+          width: 400, // Adjust the width as needed
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 20),
+              TextField(
+                controller: questionController,
+                decoration: const InputDecoration(
+                  labelText: 'Question',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: answer1Controller,
+                decoration: const InputDecoration(
+                  labelText: 'Answer 1',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: answer2Controller,
+                decoration: const InputDecoration(
+                  labelText: 'Answer 2',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: answer3Controller,
+                decoration: const InputDecoration(
+                  labelText: 'Answer 3',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: answer4Controller,
+                decoration: const InputDecoration(
+                  labelText: 'Answer 4',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Select the correct answer option:',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.left,
+              ),
+              DropdownButton<int>(
+                value: selectedCorrectAnswer,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedCorrectAnswer = value!;
+                  });
+                },
+                items: correctAnswerOptions.map((int option) {
+                  return DropdownMenuItem<int>(
+                    value: option,
+                    child: Text('Answer $option'),
                   );
-                }
-              },
-              child: Text('add Question'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (numOfQuestionsAdded >=
-                    int.parse(_NumOfQuestionPageState
-                        .numOfQuestionsController.text)) {
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  addQuizData();
+                },
+                child: const Text('Add Question'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  submitQuizData();
+                  if (numOfQuestions >=
+                      int.parse(_NumOfQuestionPageState
+                          .numOfQuestionsController.text)) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => summaryPage()),
+                    );
+                  }
+                },
+                child: const Text('Submit'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => introPage()),
                   );
-                }
-              },
-              child: Text('back to intro page'),
-            )
-          ],
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -12,7 +12,7 @@ class _summaryPageState extends State<summaryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Robophone Kahoot Game'),
+        title: const Text('Robophone Kahoot Game'),
         actions: [
           ElevatedButton(
             onPressed: () {
@@ -21,7 +21,7 @@ class _summaryPageState extends State<summaryPage> {
                 MaterialPageRoute(builder: (context) => CreateQuizApp()),
               );
             },
-            child: Text('Create Quiz'),
+            child: const Text('Create Quiz'),
           ),
         ],
       ),
@@ -29,7 +29,21 @@ class _summaryPageState extends State<summaryPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Admin,you created your Quiz succesfully!'),
+            const Icon(
+              Icons.check_circle, // Use a success icon (you can customize it)
+              color: Colors.green, // Use a success color
+              size: 100.0, // Adjust the size as needed
+            ),
+            const SizedBox(
+                height: 20.0), // Add some space between the icon and text
+            const Text(
+              'Congratulations, you have successfully created your quiz!',
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
             SizedBox(height: 40.0),
             ElevatedButton(
               onPressed: () {
@@ -38,9 +52,11 @@ class _summaryPageState extends State<summaryPage> {
                   MaterialPageRoute(builder: (context) => introPage()),
                 );
               },
-              child: Text('finish'),
+              child: Text('Finish'),
             ),
-            SizedBox(height: 10.0), // Add some space between cards
+            SizedBox(
+                height:
+                    10.0), // Add some space between the button and other elements
           ],
         ),
       ),
