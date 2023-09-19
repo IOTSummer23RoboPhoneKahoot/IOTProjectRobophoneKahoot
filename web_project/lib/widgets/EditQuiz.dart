@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:web_project/SummaryQuizPage.dart';
 import 'package:web_project/models/quiz.dart';
-import 'package:web_project/services/firebase_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:web_project/widgets/EditQuizDetails.dart';
+import '../SummaryQuizPage.dart';
 import '../IntroPage.dart';
 
 class EditQuiz extends StatefulWidget {
@@ -17,45 +18,100 @@ class EditQuiz extends StatefulWidget {
 
 class _EditQuizState extends State<EditQuiz> {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
-  List<Question>? quizQuestions = [];
+  List<Question> quizQuestions = [];
   int currentQuestionIndex = 0; // Index of the currently displayed question
-  String questionText = 'Question';
-  String correctOptionIndex = '0';
   List<String> options = [];
+  bool allQuestionsFilled = true;
+
+  String questionText = ''; // Initialize with an empty string
+  String correctOptionIndex = '0'; // Initialize with '0'
 
   @override
   void initState() {
     super.initState();
 
     // Initialize quiz questions based on the original quiz
-    quizQuestions = widget.quiz.questions ?? [];
-
+    quizQuestions = List.from(widget.quiz.questions ?? []);
+    int i = quizQuestions.length;
     // Ensure we have at least the required number of questions to edit
-    int i = quizQuestions!.length;
     while (i < widget.numberOfQuestionsToEdit) {
-      quizQuestions!.add(Question(
+      quizQuestions.add(Question(
           questionText: 'New Question',
-          options: ['Option A', 'Option B', 'Option C'],
+          options: ['Option A', 'Option B', 'Option C', 'Option D'],
           correctOptionIndex: '0',
-          questionID: i + 1));
+          questionID: quizQuestions.length + 1));
       i++;
+    }
+
+    // Load the first question
+    loadQuestionData(currentQuestionIndex);
+  }
+
+  // Function to load question data based on the current index
+  void loadQuestionData(int questionIndex) {
+    if (questionIndex >= 0 && questionIndex < quizQuestions.length) {
+      final questionData = quizQuestions[questionIndex];
+      setState(() {
+        options = questionData.options;
+        questionText = questionData.questionText; // Update question text
+        correctOptionIndex =
+            questionData.correctOptionIndex; // Update correct option index
+      });
     }
   }
 
-  // Function to build a widget for editing a single question
+  // Function to update the current question with edited data
+  void updateCurrentQuestion() {
+    final questionData = quizQuestions[currentQuestionIndex];
+    questionData.questionText = questionText;
+    questionData.correctOptionIndex = correctOptionIndex;
+    questionData.options = List.from(options);
+    // setState(() {
+    //   allQuestionsFilled = isAllQuestionsFilled();
+    // });
+  }
+
+  // Function to check if all questions are filled
+  // bool isAllQuestionsFilled() {
+  //   for (int i = 0; i < quizQuestions.length; i++) {
+  //     final questionData = quizQuestions[i];
+  //     if (questionData.questionText.isEmpty ||
+  //         questionData.options.any((option) => option.isEmpty)) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
+
+  // Function to go to the next question
+  void goToNextQuestion() {
+    if (currentQuestionIndex < widget.numberOfQuestionsToEdit - 1) {
+      updateCurrentQuestion();
+      setState(() {
+        currentQuestionIndex++;
+        loadQuestionData(currentQuestionIndex);
+      });
+    }
+  }
+
+  // Function to go to the previous question
+  void goToPreviousQuestion() {
+    if (currentQuestionIndex > 0) {
+      updateCurrentQuestion();
+      setState(() {
+        currentQuestionIndex--;
+        loadQuestionData(currentQuestionIndex);
+      });
+    }
+  }
+
   Widget buildQuestionEditor(int questionIndex) {
-    if (questionIndex >= quizQuestions!.length) {
+    if (questionIndex >= quizQuestions.length) {
       return Text('No questions available at this index');
     }
 
-    final questionData = quizQuestions![questionIndex];
+    final questionData = quizQuestions[questionIndex];
     final int questionNum = questionIndex + 1;
-
-    setState(() {
-      options = questionData.options;
-      questionText = questionData.questionText;
-      correctOptionIndex = questionData.correctOptionIndex;
-    });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,10 +130,11 @@ class _EditQuizState extends State<EditQuiz> {
             border: OutlineInputBorder(),
           ),
           controller: TextEditingController(text: questionText),
+          textDirection: TextDirection.ltr, // Ensure left-to-right input
           onChanged: (text) {
             // Update the question text in the data
             setState(() {
-              questionText = text;
+              questionText = text; // Update question text
             });
           },
         ),
@@ -95,10 +152,11 @@ class _EditQuizState extends State<EditQuiz> {
             border: OutlineInputBorder(),
           ),
           controller: TextEditingController(text: correctOptionIndex),
+          textDirection: TextDirection.ltr, // Ensure left-to-right input
           onChanged: (text) {
             // Update the correct option index in the data
             setState(() {
-              correctOptionIndex = text;
+              correctOptionIndex = text; // Update correct option index
             });
           },
         ),
@@ -114,12 +172,6 @@ class _EditQuizState extends State<EditQuiz> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Text(
-              //   'Option ${String.fromCharCode(65 + i)}:',
-              //   style: TextStyle(
-              //     fontSize: 14.0,
-              //   ),
-              // ),
               SizedBox(height: 4.0),
               TextField(
                 decoration: InputDecoration(
@@ -128,6 +180,7 @@ class _EditQuizState extends State<EditQuiz> {
                 ),
                 controller:
                     TextEditingController(text: questionData.options[i]),
+                textDirection: TextDirection.ltr, // Ensure left-to-right input
                 onChanged: (text) {
                   setState(() {
                     options[i] = text; // Update the options list
@@ -141,32 +194,45 @@ class _EditQuizState extends State<EditQuiz> {
     );
   }
 
-  void submitQuestionData() {
-    Map<String, dynamic> questionData = {
-      'question': questionText,
-      'correctOptionIndex': correctOptionIndex,
-      'options': options,
-    };
-    int questionID = currentQuestionIndex + 1;
-    _databaseRef
-        .child(
-            'Robophone/5669122872442880/quizzes/${widget.quiz!.quizID}/questions/$questionID')
-        .update(questionData);
-  }
 
-  void goToNextQuestion() {
-    if (currentQuestionIndex < quizQuestions!.length - 1) {
-      setState(() {
-        currentQuestionIndex++;
-      });
-    }
-  }
-
-  void goToPreviousQuestion() {
-    if (currentQuestionIndex > 0) {
-      setState(() {
-        currentQuestionIndex--;
-      });
+  // Function to save all edited questions to the database
+  void saveAllQuestions() {
+    updateCurrentQuestion();
+    if (allQuestionsFilled) {
+      for (int i = 0; i < quizQuestions.length; i++) {
+        final questionData = quizQuestions[i];
+        int questionID = i + 1;
+        _databaseRef
+            .child(
+                'Robophone/5669122872442880/quizzes/${widget.quiz!.quizID}/questions/$questionID')
+            .update(questionData.toMap());
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => summaryPage(
+            editPage: true,
+          ),
+        ),
+      ); // Assuming toMap() method is defined in Question class
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Please fill all required questions before saving.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -208,10 +274,16 @@ class _EditQuizState extends State<EditQuiz> {
 
               // Add a button to save the edited quiz data
               ElevatedButton(
-                onPressed: () {
-                  submitQuestionData();
-                },
-                child: Text('Save Question'),
+                onPressed: saveAllQuestions,
+                child: Text('Save Questions'),
+                // Disable the button if not all required questions are filled
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (states) {
+                      return allQuestionsFilled ? Colors.blue : Colors.grey;
+                    },
+                  ),
+                ),
               ),
 
               // Add spacing

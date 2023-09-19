@@ -3,6 +3,8 @@ import 'CreateQuiz.dart';
 import 'IntroPage.dart';
 
 class summaryPage extends StatefulWidget {
+  bool editPage;
+  summaryPage({required this.editPage});
   @override
   _summaryPageState createState() => _summaryPageState();
 }
@@ -36,14 +38,24 @@ class _summaryPageState extends State<summaryPage> {
             ),
             const SizedBox(
                 height: 20.0), // Add some space between the icon and text
-            const Text(
-              'Congratulations, you have successfully created your quiz!',
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
+            if (widget.editPage)
+              const Text(
+                'Congratulations, you have successfully edited your quiz!',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              )
+            else
+              const Text(
+                'Congratulations, you have successfully created your quiz!',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
             SizedBox(height: 40.0),
             ElevatedButton(
               onPressed: () {
