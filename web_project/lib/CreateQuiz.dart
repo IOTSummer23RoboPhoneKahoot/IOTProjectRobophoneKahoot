@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'IntroPage.dart';
 import 'SummaryQuizPage.dart';
 import 'dart:math';
+import 'package:routemaster/routemaster.dart';
 
 String generatedPin = '0000';
 String generateRandomPin() {
@@ -49,6 +50,13 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
         title: Text(
           'Quiz Creator',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.home),
+          onPressed: () {
+            Routemaster.of(context).push('/');
+          },
+          tooltip: 'Go to Home',
         ),
       ),
       body: Center(
@@ -209,6 +217,17 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     // Add the question to the list
     quizQuestions.add(questionData);
     quizData.add(quizDetailsData);
+    Map<String, dynamic> updateData = {
+      "nextHourTime": 0,
+      "nextMinuteTime": 0,
+      "nextSecondTime": 0,
+      "nextQuestionTime": "",
+      "currentQuestion": 0
+    };
+// Mahmoud and Ruqyad : added this to intialize the properties above so we could
+// start the game(robophone assumes that before we start the game we already have
+// these values in the DB)
+    _databaseRef.child('Robophone/quizzes/${generatedPin}').update(updateData);
     // Clear the text fields
     questionController.clear();
     answer1Controller.clear();
