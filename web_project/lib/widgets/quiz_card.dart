@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
-import 'package:web_project/quiz_detials.dart';
+import 'package:web_project/widgets/quiz_detials.dart';
 
 class QuizCard extends StatelessWidget {
   final Quiz quiz;
@@ -9,18 +9,18 @@ class QuizCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => QuizDetailsPage(quiz: quiz),
-          ),
-        );
-      },
-      child: Card(
-        elevation: 4.0,
-        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+    return Card(
+      elevation: 4.0,
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QuizDetailsPage(quiz: quiz),
+            ),
+          );
+        },
         child: Padding(
           padding: EdgeInsets.all(12.0),
           child: Column(

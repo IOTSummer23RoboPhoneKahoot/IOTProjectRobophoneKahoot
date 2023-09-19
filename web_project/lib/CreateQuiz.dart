@@ -217,6 +217,7 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     // Add the question to the list
     quizQuestions.add(questionData);
     quizData.add(quizDetailsData);
+
     Map<String, dynamic> updateData = {
       "nextHourTime": 0,
       "nextMinuteTime": 0,

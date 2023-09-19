@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:web_project/services/firebase_service.dart';
 import 'dart:async'; // Import needed for StreamSubscription
+import 'dart:math';
 
 class FastestPlayerWidget extends StatefulWidget {
   final Quiz quiz;
@@ -73,37 +74,57 @@ class _FastestPlayerWidgetState extends State<FastestPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Card(
-                  elevation: 2.0,
-                  margin: EdgeInsets.all(8.0),
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Fastest Player:' + username,
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 250),
+          //margin: EdgeInsets.symmetric(horizontal: 70.0),
+          child: Card(
+            elevation: 2.0,
+            child: Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        color: Colors.pink,
+                      ),
+                      SizedBox(width: 8.0),
+                      Text(
+                        'Fastest Player:  ' + username,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'diffTime: ' + totalDiffTime.toString(),
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  SizedBox(height: 8.0),
+                  Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        color: Colors.purple,
+                      ),
+                      SizedBox(width: 8.0),
+                      Text(
+                        'diffTime:  ' + totalDiffTime.toString(),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

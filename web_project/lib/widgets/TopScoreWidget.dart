@@ -37,10 +37,6 @@ class _HighestScoreWidgetState extends State<HighestScoreWidget> {
     });
   }
 
-  Widget temp(BuildContext context) {
-    return build(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     var topPlayers = quiz1.getTopPlayers(1);
@@ -60,18 +56,12 @@ class _HighestScoreWidgetState extends State<HighestScoreWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Highest Score:',
+                    'Highest Score\n ' + '         ' + highestScore.toString(),
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    highestScore.toString(),
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  )
                 ],
               ),
             ),

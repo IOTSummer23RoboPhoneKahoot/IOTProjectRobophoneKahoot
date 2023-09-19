@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:web_project/services/firebase_service.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'dart:math';
 
 class TopNWinners extends StatefulWidget {
   final Quiz quiz;
@@ -9,10 +9,10 @@ class TopNWinners extends StatefulWidget {
   TopNWinners({required this.quiz});
 
   @override
-  _TopNWinners createState() => _TopNWinners();
+  _TopNWinnersState createState() => _TopNWinnersState();
 }
 
-class _TopNWinners extends State<TopNWinners> {
+class _TopNWinnersState extends State<TopNWinners> {
   Quiz quiz1 = Quiz(
     quizID: '',
     questions: [],
@@ -28,6 +28,7 @@ class _TopNWinners extends State<TopNWinners> {
   @override
   void initState() {
     super.initState();
+    print('the quiz in top winnder is:' + widget.quiz.toString());
     fetchQuizByID(widget.quiz.quizID).then((fetchedQuiz) {
       setState(() {
         quiz1 = fetchedQuiz ?? quiz1;
@@ -36,45 +37,120 @@ class _TopNWinners extends State<TopNWinners> {
     });
   }
 
-  Widget temp(BuildContext context) {
-    return build(context);
+  Color getRandomColor() {
+    final random = Random();
+    return Color.fromRGBO(
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+      1.0,
+    );
+  }
+
+  String doubleFormat(double number) {
+    String formattedNumber = number.toStringAsFixed(2);
+    if (formattedNumber.endsWith('.00')) {
+      formattedNumber = formattedNumber.replaceAll('.00', '');
+    }
+    return formattedNumber;
+  }
+
+  Widget buildWinnerPentagon(Player player, int place) {
+    final double largestSize =
+        90.0; // Define a constant size for the largest player
+    double size = largestSize -
+        (place - 1) * 10.0; // Calculate the size based on the player's place
+    final playerColor = getRandomColor();
+    return Column(
+      children: [
+        Container(
+          width: size,
+          height: size,
+          child: ClipPath(
+            clipper: MyPentagonClipper(),
+            child: Container(
+              color: playerColor,
+              child: Center(
+                child: Text(
+                  doubleFormat(player.score),
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Text(
+          '${place == 1 ? '1st' : place == 2 ? '2nd' : '3rd'} Place',
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          player.username,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2.0,
-      margin: EdgeInsets.all(8.0),
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'TOP 3 WINNERS:',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Container(
-              height: 100,
-              child: SfCartesianChart(
-                primaryXAxis: CategoryAxis(),
-                series: <ChartSeries>[
-                  ColumnSeries<Player, String>(
-                    dataSource: topPlayers,
-                    xValueMapper: (Player player, _) => player.username,
-                    yValueMapper: (Player player, _) => player.score,
-                    dataLabelSettings: DataLabelSettings(isVisible: true),
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: FractionallySizedBox(
+        widthFactor: 0.3,
+        child: Card(
+          elevation: 2.0,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 100),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'TOP 3',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: topPlayers.asMap().entries.map((entry) {
+                    final player = entry.value;
+                    final place = entry.key + 1;
+                    return buildWinnerPentagon(player, place);
+                  }).toList(),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
+  }
+}
+
+class MyPentagonClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(size.width / 2, 0);
+    path.lineTo(size.width, size.height * 0.3);
+    path.lineTo(size.width * 0.8, size.height);
+    path.lineTo(size.width * 0.2, size.height);
+    path.lineTo(0, size.height * 0.3);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return false;
   }
 }
