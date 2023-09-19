@@ -143,27 +143,52 @@ class _EditQuizDetailsState extends State<EditQuizDetails> {
   }
 
   void submitQuizData() {
-    Map<String, dynamic> quizDetailsData = {
-      'nameOfQuiz': nameOfQuiz,
-      'timeToAnswerPerQuestion': options[selectedOptionIndex],
-      'numOfQuestions': numOfQuestions,
-    };
+    if (int.parse(numOfQuestions) != 0) {
+      Map<String, dynamic> quizDetailsData = {
+        'nameOfQuiz': nameOfQuiz,
+        'timeToAnswerPerQuestion': options[selectedOptionIndex],
+        'numOfQuestions': numOfQuestions,
+      };
 
-    _databaseRef
-        .child('sabaaTest/quizzes/${widget.quiz.quizID}/quizDetails')
-        .update(quizDetailsData)
-        .then((_) {
-      if (numOfQuestions != widget.quiz.quizDetails.numOfQuestions) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditQuiz(
-              quiz: widget.quiz,
-              numberOfQuestionsToEdit: int.parse(numOfQuestions),
+      _databaseRef
+          .child('sabaaTest/quizzes/${widget.quiz.quizID}/quizDetails')
+          .update(quizDetailsData)
+          .then((_) {
+        if (numOfQuestions != widget.quiz.quizDetails.numOfQuestions) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditQuiz(
+                quiz: widget.quiz,
+                numberOfQuestionsToEdit: int.parse(numOfQuestions),
+              ),
             ),
-          ),
+          );
+        }
+      });
+    } else {
+      showCustomAlert(
+          context, "you cannot have an empty quiz! please try again");
+    }
+  }
+
+  void showCustomAlert(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alert'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
-      }
-    });
+      },
+    );
   }
 }

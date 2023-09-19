@@ -155,7 +155,6 @@ class QuizCreatorPage extends StatefulWidget {
 
 class _QuizCreatorPageState extends State<QuizCreatorPage> {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
-  //TextEditingController correctOptionIndexController = TextEditingController();
   TextEditingController questionController = TextEditingController();
   TextEditingController answer1Controller = TextEditingController();
   TextEditingController answer2Controller = TextEditingController();
@@ -168,7 +167,39 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
 
   // Variable to store the selected correct answer number
   int selectedCorrectAnswer = 1;
+
   void submitQuizData() {
+    if (quizQuestions.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content:
+                Text('Please add at least one question before submitting.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    Map<String, dynamic> updateData = {
+      "nextHourTime": 0,
+      "nextMinuteTime": 0,
+      "nextSecondTime": 0,
+      "nextQuestionTime": "",
+      "currentQuestion": 0
+    };
+
+    _databaseRef.child('Robophone/quizzes/${generatedPin}').update(updateData);
     _databaseRef.child('sabaaTest/quizzes/$generatedPin/quizID').update({
       'quizID': generatedPin,
     });
@@ -204,6 +235,34 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
     String answer2 = answer2Controller.text;
     String answer3 = answer3Controller.text;
     String answer4 = answer4Controller.text;
+
+    // Validate that answers are not similar
+    if (answer1 == answer2 ||
+        answer1 == answer3 ||
+        answer1 == answer4 ||
+        answer2 == answer3 ||
+        answer2 == answer4 ||
+        answer3 == answer4) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Answers cannot be similar.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     Map<String, dynamic> questionData = {
       'question': question,
       'correctOptionIndex': correctOptionIndex,
@@ -214,21 +273,11 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       'timeToAnswerPerQuestion': timeToAnswerPerQuestion,
       'numOfQuestions': numOfQuestions,
     };
+
     // Add the question to the list
     quizQuestions.add(questionData);
     quizData.add(quizDetailsData);
 
-    Map<String, dynamic> updateData = {
-      "nextHourTime": 0,
-      "nextMinuteTime": 0,
-      "nextSecondTime": 0,
-      "nextQuestionTime": "",
-      "currentQuestion": 0
-    };
-// Mahmoud and Ruqyad : added this to intialize the properties above so we could
-// start the game(robophone assumes that before we start the game we already have
-// these values in the DB)
-    _databaseRef.child('Robophone/quizzes/${generatedPin}').update(updateData);
     // Clear the text fields
     questionController.clear();
     answer1Controller.clear();
@@ -329,7 +378,10 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
                           .numOfQuestionsController.text)) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => summaryPage()),
+                      MaterialPageRoute(
+                          builder: (context) => summaryPage(
+                                editPage: false,
+                              )),
                     );
                   }
                 },
