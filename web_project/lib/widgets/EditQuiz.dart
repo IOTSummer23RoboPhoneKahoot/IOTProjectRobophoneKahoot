@@ -6,50 +6,74 @@ import 'package:web_project/widgets/EditQuizDetails.dart';
 import '../IntroPage.dart';
 
 class EditQuiz extends StatefulWidget {
-  Quiz? quiz;
-  EditQuiz({required this.quiz});
+  Quiz quiz; // Pass the original quiz
+  int numberOfQuestionsToEdit; // Number of questions to edit (including extra questions)
+
+  EditQuiz({required this.quiz, required this.numberOfQuestionsToEdit});
+
   @override
   _EditQuizState createState() => _EditQuizState();
 }
 
 class _EditQuizState extends State<EditQuiz> {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
-  Quiz? quiz = quiz_temp;
   List<Question>? quizQuestions = [];
-  QuizDetails? quizData;
   int currentQuestionIndex = 0; // Index of the currently displayed question
-  String questionText = 'question';
+  String questionText = 'Question';
   String correctOptionIndex = '0';
   List<String> options = [];
-  String numOfQuestions = '0';
+
   @override
   void initState() {
     super.initState();
 
-    setState(() {
-      if (widget.quiz != null) {
-        quiz = widget.quiz;
-        quizQuestions = widget.quiz!.questions;
-        quizData = widget.quiz!.quizDetails;
-      }
-    });
+    // Initialize quiz questions based on the original quiz
+    quizQuestions = widget.quiz.questions ?? [];
+
+    // Ensure we have at least the required number of questions to edit
+    int i = quizQuestions!.length;
+    while (i < widget.numberOfQuestionsToEdit) {
+      quizQuestions!.add(Question(
+          questionText: 'New Question',
+          options: ['Option A', 'Option B', 'Option C'],
+          correctOptionIndex: '0',
+          questionID: i + 1));
+      i++;
+    }
   }
 
   // Function to build a widget for editing a single question
   Widget buildQuestionEditor(int questionIndex) {
+    if (questionIndex >= quizQuestions!.length) {
+      return Text('No questions available at this index');
+    }
+
     final questionData = quizQuestions![questionIndex];
     final int questionNum = questionIndex + 1;
+
     setState(() {
       options = questionData.options;
+      questionText = questionData.questionText;
       correctOptionIndex = questionData.correctOptionIndex;
     });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Question $questionNum:'),
+        Text(
+          'Question $questionNum:',
+          style: TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 8.0),
         TextField(
-          controller: TextEditingController(text: questionData.questionText),
+          decoration: InputDecoration(
+            labelText: 'Question Text',
+            border: OutlineInputBorder(),
+          ),
+          controller: TextEditingController(text: questionText),
           onChanged: (text) {
             // Update the question text in the data
             setState(() {
@@ -57,22 +81,51 @@ class _EditQuizState extends State<EditQuiz> {
             });
           },
         ),
-        Text('correct option index:'),
+        SizedBox(height: 16.0),
+        Text(
+          'Correct Option Index:',
+          style: TextStyle(
+            fontSize: 16.0,
+          ),
+        ),
+        SizedBox(height: 8.0),
         TextField(
+          decoration: InputDecoration(
+            labelText: 'Correct Option Index',
+            border: OutlineInputBorder(),
+          ),
           controller: TextEditingController(text: correctOptionIndex),
           onChanged: (text) {
-            // Update the question text in the data
+            // Update the correct option index in the data
             setState(() {
               correctOptionIndex = text;
             });
           },
         ),
+        SizedBox(height: 16.0),
+        Text(
+          'Answer Options:',
+          style: TextStyle(
+            fontSize: 16.0,
+          ),
+        ),
+        SizedBox(height: 8.0),
         for (int i = 0; i < questionData.options.length; i++)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Answer option ${i + 1}:'),
+              // Text(
+              //   'Option ${String.fromCharCode(65 + i)}:',
+              //   style: TextStyle(
+              //     fontSize: 14.0,
+              //   ),
+              // ),
+              SizedBox(height: 4.0),
               TextField(
+                decoration: InputDecoration(
+                  labelText: 'Option ${String.fromCharCode(65 + i)}',
+                  border: OutlineInputBorder(),
+                ),
                 controller:
                     TextEditingController(text: questionData.options[i]),
                 onChanged: (text) {
@@ -81,6 +134,7 @@ class _EditQuizState extends State<EditQuiz> {
                   });
                 },
               ),
+              SizedBox(height: 8.0),
             ],
           ),
       ],
@@ -93,10 +147,9 @@ class _EditQuizState extends State<EditQuiz> {
       'correctOptionIndex': correctOptionIndex,
       'options': options,
     };
-
+    int questionID = currentQuestionIndex + 1;
     _databaseRef
-        .child(
-            'sabaaTest/quizzes/${quiz!.quizID}/questions/$currentQuestionIndex')
+        .child('sabaaTest/quizzes/${widget.quiz!.quizID}/questions/$questionID')
         .update(questionData);
   }
 
@@ -118,53 +171,65 @@ class _EditQuizState extends State<EditQuiz> {
 
   @override
   Widget build(BuildContext context) {
-    // Implement the UI for editing quiz data here
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Quiz'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Display the currently selected question for editing
-            buildQuestionEditor(currentQuestionIndex),
+      body: Center(
+        child: Container(
+          width: 400, // Adjust the width as needed
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Display the currently selected question for editing
+              buildQuestionEditor(currentQuestionIndex),
 
-            // Add navigation buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: goToPreviousQuestion,
-                  child: Text('Previous'),
-                ),
-                ElevatedButton(
-                  onPressed: goToNextQuestion,
-                  child: Text('Next'),
-                ),
-              ],
-            ),
+              // Add spacing between buttons
+              SizedBox(height: 16.0),
 
-            // Add a button to save the edited quiz data
-            ElevatedButton(
-              onPressed: () {
-                submitQuestionData();
-                // Implement the logic to save edited data to Firebase
-              },
-              child: Text('Save Changes'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => introPage(),
+              // Add navigation buttons with spacing
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: goToPreviousQuestion,
+                    child: Text('Previous'),
                   ),
-                );
-              },
-              child: Text('Cancel'),
-            ),
-          ],
+                  ElevatedButton(
+                    onPressed: goToNextQuestion,
+                    child: Text('Next'),
+                  ),
+                ],
+              ),
+
+              // Add spacing
+              SizedBox(height: 16.0),
+
+              // Add a button to save the edited quiz data
+              ElevatedButton(
+                onPressed: () {
+                  submitQuestionData();
+                },
+                child: Text('Save Question'),
+              ),
+
+              // Add spacing
+              SizedBox(height: 8.0),
+
+              // Add a button to cancel and navigate back
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => introPage(),
+                    ),
+                  );
+                },
+                child: Text('Cancel'),
+              ),
+            ],
+          ),
         ),
       ),
     );

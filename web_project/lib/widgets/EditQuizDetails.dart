@@ -17,21 +17,21 @@ class EditQuizDetails extends StatefulWidget {
 class _EditQuizDetailsState extends State<EditQuizDetails> {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
   String nameOfQuiz = 'Quiz Name';
+  String quiz_id = '1';
   String numOfQuestions = '0';
   int selectedOptionIndex = 0;
   final List<String> options = ['20', '25', '30', '60'];
   Quiz? new_quiz = quiz_temp;
+
   @override
   void initState() {
     super.initState();
 
     setState(() {
       if (widget.quiz != null) {
-        print("im hehehehehehe222");
         nameOfQuiz = widget.quiz!.quizDetails.nameOfQuiz;
-        print(nameOfQuiz);
         numOfQuestions = widget.quiz!.quizDetails.numOfQuestions;
-        print(numOfQuestions);
+        quiz_id = widget.quiz.quizID;
       }
     });
   }
@@ -41,90 +41,88 @@ class _EditQuizDetailsState extends State<EditQuizDetails> {
       appBar: AppBar(
         title: Text('Edit Quiz Details'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Quiz Name:',
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
+      body: Center(
+        child: Container(
+          width: 400, // Adjust the width as needed
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 8.0),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Quiz Name',
+                  border: OutlineInputBorder(),
+                ),
+                controller: TextEditingController(text: nameOfQuiz),
+                onChanged: (text) {
+                  setState(() {
+                    nameOfQuiz = text;
+                  });
+                },
               ),
-            ),
-            TextField(
-              controller: TextEditingController(text: nameOfQuiz),
-              onChanged: (text) {
-                setState(() {
-                  nameOfQuiz = text;
-                });
-              },
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              'Number of Questions:',
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
+              SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Number of Questions',
+                  border: OutlineInputBorder(),
+                ),
+                controller: TextEditingController(text: numOfQuestions),
+                onChanged: (text) {
+                  setState(() {
+                    numOfQuestions = text;
+                  });
+                },
               ),
-            ),
-            TextField(
-              controller: TextEditingController(text: numOfQuestions),
-              onChanged: (text) {
-                setState(() {
-                  numOfQuestions = text;
-                });
-              },
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              'Time to Answer Per Question:',
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
+              SizedBox(height: 16.0),
+              Text(
+                'Time to Answer Per Question:',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            DropdownButton<int>(
-              value: selectedOptionIndex,
-              onChanged: (int? value) {
-                setState(() {
-                  selectedOptionIndex = value!;
-                });
-              },
-              items: options.asMap().entries.map((entry) {
-                return DropdownMenuItem<int>(
-                  value: entry.key,
-                  child: Text(entry.value + ' seconds'),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 40.0),
-            Column(
-              children: [
-                Center(
-                  child: ElevatedButton(
+              SizedBox(height: 8.0),
+              DropdownButton<int>(
+                value: selectedOptionIndex,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedOptionIndex = value!;
+                  });
+                },
+                items: options.asMap().entries.map((entry) {
+                  return DropdownMenuItem<int>(
+                    value: entry.key,
+                    child: Text(entry.value + ' seconds'),
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 24.0),
+              Column(
+                children: [
+                  ElevatedButton(
                     onPressed: () {
                       submitQuizData();
                     },
-                    child: Text('Save Changes '),
+                    child: Text('Save Changes'),
                   ),
-                ),
-                Center(
-                  child: ElevatedButton(
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EditQuiz(quiz: widget.quiz),
+                          builder: (context) => EditQuiz(
+                            quiz: widget.quiz,
+                            numberOfQuestionsToEdit: int.parse(numOfQuestions),
+                          ),
                         ),
                       );
                     },
                     child: Text('Edit Questions'),
                   ),
-                ),
-                Center(
-                  child: ElevatedButton(
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -135,10 +133,10 @@ class _EditQuizDetailsState extends State<EditQuizDetails> {
                     },
                     child: Text('Cancel'),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -153,21 +151,19 @@ class _EditQuizDetailsState extends State<EditQuizDetails> {
 
     _databaseRef
         .child('sabaaTest/quizzes/${widget.quiz.quizID}/quizDetails')
-        .update(quizDetailsData);
-    if (numOfQuestions != widget.quiz.quizDetails.numOfQuestions) {
-      fetchQuizByID(widget.quiz.quizID).then((fetchedQuizzes) {
-        setState(() {
-          new_quiz = fetchedQuizzes;
-        });
-      });
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EditQuiz(
-            quiz: new_quiz,
+        .update(quizDetailsData)
+        .then((_) {
+      if (numOfQuestions != widget.quiz.quizDetails.numOfQuestions) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditQuiz(
+              quiz: widget.quiz,
+              numberOfQuestionsToEdit: int.parse(numOfQuestions),
+            ),
           ),
-        ),
-      );
-    }
+        );
+      }
+    });
   }
 }
