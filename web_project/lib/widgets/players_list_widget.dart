@@ -59,7 +59,7 @@ class _PlayersListWidgetState extends State<PlayersListWidget> {
               ...players
                   .map((player) => Card(
                         margin: EdgeInsets.symmetric(vertical: 10.0),
-                        color: Colors.grey[100],
+                        color: Color.fromARGB(255, 241, 227, 227),
                         child: ListTile(
                           title: Text(player.username),
                         ),

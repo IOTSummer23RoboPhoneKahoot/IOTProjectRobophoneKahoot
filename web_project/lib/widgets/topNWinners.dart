@@ -24,6 +24,12 @@ class _TopNWinnersState extends State<TopNWinners> {
     players: [],
   );
   List<Player> topPlayers = [];
+  List<Color> playerColors = [
+    Color.fromARGB(255, 230, 122, 203), // 1st player color
+    Color.fromARGB(255, 191, 216, 218), // 2nd player color
+    Color.fromARGB(255, 83, 183, 254), // 3rd player color (or more if needed)
+  ];
+  int maxPlayersToShow = 3;
 
   @override
   void initState() {
@@ -32,19 +38,9 @@ class _TopNWinnersState extends State<TopNWinners> {
     fetchQuizByID(widget.quiz.quizID).then((fetchedQuiz) {
       setState(() {
         quiz1 = fetchedQuiz ?? quiz1;
-        topPlayers = quiz1.getTopPlayers(3);
+        topPlayers = quiz1.getTopPlayers(maxPlayersToShow);
       });
     });
-  }
-
-  Color getRandomColor() {
-    final random = Random();
-    return Color.fromRGBO(
-      random.nextInt(256),
-      random.nextInt(256),
-      random.nextInt(256),
-      1.0,
-    );
   }
 
   String doubleFormat(double number) {
@@ -56,11 +52,16 @@ class _TopNWinnersState extends State<TopNWinners> {
   }
 
   Widget buildWinnerPentagon(Player player, int place) {
-    final double largestSize =
-        90.0; // Define a constant size for the largest player
-    double size = largestSize -
-        (place - 1) * 10.0; // Calculate the size based on the player's place
-    final playerColor = getRandomColor();
+    if (place > playerColors.length) {
+      // Handle the case when you have more than the defined colors.
+      // You can use a default color or repeat the colors as needed.
+      return SizedBox(); // Return an empty widget for now.
+    }
+
+    final playerColor = playerColors[place - 1];
+
+    final double largestSize = 90.0;
+    double size = largestSize - (place - 1) * 10.0;
     return Column(
       children: [
         Container(
@@ -112,7 +113,7 @@ class _TopNWinnersState extends State<TopNWinners> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'TOP 3',
+                  '   TOP $maxPlayersToShow',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

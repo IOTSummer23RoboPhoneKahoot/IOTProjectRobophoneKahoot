@@ -72,10 +72,6 @@ class _QuestionStatsState extends State<QuestionStats> {
               ),
               SizedBox(height: 16.0),
               Text(
-                'Quiz ID: ${widget.quiz.quizID}',
-                style: TextStyle(fontSize: 18),
-              ),
-              Text(
                 'Correct answer is: ${widget.correctAnswer}',
                 style: TextStyle(fontSize: 18),
               ),

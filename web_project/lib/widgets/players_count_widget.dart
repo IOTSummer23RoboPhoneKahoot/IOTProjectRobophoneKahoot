@@ -44,7 +44,7 @@ class _PlayerCountWidgetState extends State<PlayerCountWidget> {
         height: 150,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.blue,
+          color: Colors.grey,
         ),
         child: Center(
           child: Column(

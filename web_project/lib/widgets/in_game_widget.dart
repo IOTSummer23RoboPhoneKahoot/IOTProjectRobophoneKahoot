@@ -61,7 +61,8 @@ class _InGameWidgetState extends State<InGameWidget> {
                 : QuestionStats(
                     quiz: widget.quiz,
                     currentQuestionIndex: _currentQuestionIndex,
-                    correctAnswer: correctAnswer,
+                    correctAnswer: widget.quiz.questions[_currentQuestionIndex]
+                        .correctOptionIndex,
                   )),
         SizedBox(height: 20.0),
         (_countdownTime == 0 && _questionDuration == 0)
