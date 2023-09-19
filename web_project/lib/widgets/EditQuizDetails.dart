@@ -150,7 +150,8 @@ class _EditQuizDetailsState extends State<EditQuizDetails> {
     };
 
     _databaseRef
-        .child('sabaaTest/quizzes/${widget.quiz.quizID}/quizDetails')
+        .child(
+            'Robophone/5669122872442880/quizzes/${widget.quiz.quizID}/quizDetails')
         .update(quizDetailsData)
         .then((_) {
       if (numOfQuestions != widget.quiz.quizDetails.numOfQuestions) {
