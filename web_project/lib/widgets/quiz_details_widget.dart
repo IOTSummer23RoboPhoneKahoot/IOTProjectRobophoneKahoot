@@ -11,12 +11,12 @@ class QuizDetailsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 100.0), // Create more space from the top
+        SizedBox(height: 10.0), // Create more space from the top
         // Sharper and bigger QuizPIN at the top
         Container(
           padding: EdgeInsets.all(40.0),
           decoration: BoxDecoration(
-            color: Colors.blueAccent,
+            color: Color.fromARGB(255, 241, 227, 227),
             borderRadius: BorderRadius.circular(4.0), // Reduced for sharpness
             boxShadow: [
               BoxShadow(
@@ -29,7 +29,7 @@ class QuizDetailsWidget extends StatelessWidget {
             'QuizPIN: ${quiz.quizID}',
             style: TextStyle(
               fontSize: 50, // Increased font size for prominence
-              color: Colors.white,
+              color: Color.fromARGB(255, 137, 106, 106),
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
