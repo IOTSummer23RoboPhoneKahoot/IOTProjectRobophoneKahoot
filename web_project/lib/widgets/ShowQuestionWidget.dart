@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
-import 'package:web_project/services/firebase_service.dart';
-import 'dart:async';
 import 'package:web_project/widgets/numAnswersEachQ.dart';
 import 'package:web_project/widgets/QestionAndAsnwers.dart';
-import 'package:web_project/widgets/QuestionsStats.dart';
-import 'package:web_project/widgets/before_question_labeled_timer_widget.dart';
-import 'package:routemaster/routemaster.dart';
 import 'package:web_project/widgets/QuestionDurationTimerWidget.dart';
 
 class QuizGameWidget extends StatefulWidget {
@@ -72,7 +67,9 @@ class _QuizGameWidgetState extends State<QuizGameWidget> {
             widthFactor: 0.2,
             child: Padding(
               padding: const EdgeInsets.only(top: 20.0, right: 30.0),
-              child: Container(color: Colors.grey), // Placeholder for now.
+              child: AnswersEachQuestion(
+                  quizID: widget.quiz.quizID,
+                  questionNum: widget.currentQuestionIndex),
             ),
           ),
         ),

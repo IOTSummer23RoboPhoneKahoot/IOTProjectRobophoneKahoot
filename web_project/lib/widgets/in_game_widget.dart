@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:web_project/models/quiz.dart';
 import 'package:web_project/services/firebase_service.dart';
 import 'dart:async';
-import 'package:web_project/widgets/numAnswersEachQ.dart';
-import 'package:web_project/widgets/QestionAndAsnwers.dart';
 import 'package:web_project/widgets/QuestionsStats.dart';
 import 'package:web_project/widgets/before_question_labeled_timer_widget.dart';
 import 'package:routemaster/routemaster.dart';
@@ -61,7 +59,6 @@ class _InGameWidgetState extends State<InGameWidget> {
                 : QuestionStats(
                     quiz: widget.quiz,
                     currentQuestionIndex: _currentQuestionIndex,
-                    correctAnswer: correctAnswer,
                   )),
         SizedBox(height: 20.0),
         (_countdownTime == 0 && _questionDuration == 0)

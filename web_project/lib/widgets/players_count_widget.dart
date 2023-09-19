@@ -44,7 +44,7 @@ class _PlayerCountWidgetState extends State<PlayerCountWidget> {
         height: 150,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.blue,
+          color: Color.fromARGB(255, 211, 214, 217),
         ),
         child: Center(
           child: Column(
@@ -54,7 +54,7 @@ class _PlayerCountWidgetState extends State<PlayerCountWidget> {
                 playersNum.toString(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color.fromARGB(95, 42, 40, 40),
                   fontSize: 40,
                   fontWeight: FontWeight.bold, // Making the number appear bold
                 ),
