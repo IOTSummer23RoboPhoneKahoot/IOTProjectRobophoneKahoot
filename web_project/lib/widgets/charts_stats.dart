@@ -24,7 +24,44 @@ class _ChartScreenState<T> extends State<ChartScreen<T>> {
   }
 
   @override
+  // Widget build(BuildContext context) {
+  //   return SingleChildScrollView(
+  //     child: Container(
+  //       width: MediaQuery.of(context).size.width * 0.5,
+  //       height: 200,
+  //       child: SfCartesianChart(
+  //         primaryXAxis: CategoryAxis(),
+  //         series: <ChartSeries>[
+  //           if (widget.chartData is List<Player>)
+  //             StackedColumnSeries<Player, String>(
+  //               dataSource: (widget.chartData as List<Player>?) ?? [],
+  //               xValueMapper: (Player ch, _) => ch.username,
+  //               yValueMapper: (Player ch, _) => ch.score,
+  //               pointColorMapper: (Player ch, _) => Colors.black,
+  //             )
+  //           else if (widget.chartData is Map<String, int>)
+  //             StackedColumnSeries<Data, String>(
+  //               dataSource: (list as List<Data>?) ?? [],
+  //               xValueMapper: (Data Question, _) =>
+  //                   Question.x.toString(), // Replace with appropriate field
+  //               yValueMapper: (Data Question, _) =>
+  //                   Question.y1, // Replace with appropriate field
+  //               pointColorMapper: (Data Question, _) =>
+  //                   Colors.red, // Replace with color logic
+  //             ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
   Widget build(BuildContext context) {
+    List<Color> colorList = [
+      Colors.red,
+      Colors.yellow,
+      Colors.green,
+      Colors.blue
+    ];
+
     return SingleChildScrollView(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.5,
@@ -37,7 +74,8 @@ class _ChartScreenState<T> extends State<ChartScreen<T>> {
                 dataSource: (widget.chartData as List<Player>?) ?? [],
                 xValueMapper: (Player ch, _) => ch.username,
                 yValueMapper: (Player ch, _) => ch.score,
-                pointColorMapper: (Player ch, _) => Colors.black,
+                pointColorMapper: (Player ch, index) =>
+                    colorList[index % colorList.length],
               )
             else if (widget.chartData is Map<String, int>)
               StackedColumnSeries<Data, String>(
@@ -46,8 +84,8 @@ class _ChartScreenState<T> extends State<ChartScreen<T>> {
                     Question.x.toString(), // Replace with appropriate field
                 yValueMapper: (Data Question, _) =>
                     Question.y1, // Replace with appropriate field
-                pointColorMapper: (Data Question, _) =>
-                    Colors.red, // Replace with color logic
+                pointColorMapper: (Data Question, index) =>
+                    colorList[index % colorList.length],
               ),
           ],
         ),

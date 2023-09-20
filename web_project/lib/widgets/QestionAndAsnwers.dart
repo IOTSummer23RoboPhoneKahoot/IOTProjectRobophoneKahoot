@@ -20,7 +20,7 @@ class QuestionAndAnswers extends StatelessWidget {
         children: <Widget>[
           Text(
             questionText,
-            style: TextStyle(fontSize: 70, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 130.0),
