@@ -199,8 +199,12 @@ class _QuizCreatorPageState extends State<QuizCreatorPage> {
       "currentQuestion": 0
     };
 
-    _databaseRef.child('Robophone/quizzes/$generatedPin').update(updateData);
-    _databaseRef.child('sabaaTest/quizzes/$generatedPin/quizID').update({
+    _databaseRef
+        .child('Robophone/5669122872442880/quizzes/$generatedPin')
+        .update(updateData);
+    _databaseRef
+        .child('Robophone/5669122872442880/quizzes/$generatedPin/quizID')
+        .update({
       'quizID': generatedPin,
     });
     for (int i = 0; i < quizQuestions.length; i++) {
