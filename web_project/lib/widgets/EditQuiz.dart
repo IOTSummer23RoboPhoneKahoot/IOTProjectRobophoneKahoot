@@ -194,7 +194,6 @@ class _EditQuizState extends State<EditQuiz> {
     );
   }
 
-
   // Function to save all edited questions to the database
   void saveAllQuestions() {
     updateCurrentQuestion();

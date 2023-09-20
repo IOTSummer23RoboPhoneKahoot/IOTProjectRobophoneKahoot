@@ -116,11 +116,17 @@ class _NumOfQuestionPageState extends State<NumOfQuestionPage> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  generatedPin = generateRandomPin();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => QuizCreatorPage()),
-                  );
+                  if (isValidNumberOfQuestions(numOfQuestionsController.text)) {
+                    generatedPin = generateRandomPin();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => QuizCreatorPage()),
+                    );
+                  } else {
+                    showCustomAlert(context,
+                        "Please enter a valid number of questions between 1 and 20.");
+                  }
                 },
                 child: Text(
                   'Continue',
@@ -447,4 +453,12 @@ void showCustomAlert(BuildContext context, String message) {
       );
     },
   );
+}
+
+bool isValidNumberOfQuestions(String input) {
+  int? num = int.tryParse(input);
+  if (num != null && num >= 1 && num <= 20) {
+    return true;
+  }
+  return false;
 }

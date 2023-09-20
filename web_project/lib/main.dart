@@ -67,6 +67,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      debugShowCheckedModeBanner: false, // Add this line
+
       routerDelegate: RoutemasterDelegate(routesBuilder: (context) => routes),
       routeInformationParser: RoutemasterParser(),
     );
