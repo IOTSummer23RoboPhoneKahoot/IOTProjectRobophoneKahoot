@@ -16,11 +16,11 @@ class LabelledCountdownTimer extends StatelessWidget {
           margin: EdgeInsets.only(top: 30.0, bottom: 50.0),
           padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 55, 176, 89),
+            color: Colors.blue,
             borderRadius: BorderRadius.circular(5.0),
             boxShadow: [
               BoxShadow(
-                color: Color.fromARGB(255, 66, 216, 16).withOpacity(0.5),
+                color: Colors.blueGrey,
                 spreadRadius: 2,
                 blurRadius: 7,
                 offset: Offset(0, 3),
