@@ -8,11 +8,17 @@ import 'package:web_project/widgets/topNWinners.dart';
 class QuestionStats extends StatefulWidget {
   final Quiz quiz;
   final int currentQuestionIndex;
-  String? correctAnswer = '';
-  QuestionStats(
-      {required this.quiz,
-      required this.currentQuestionIndex,
-      required this.correctAnswer});
+  final String? correctAnswer;
+  final VoidCallback onStartCountdown;
+  final VoidCallback onEndGame;
+
+  QuestionStats({
+    required this.quiz,
+    required this.currentQuestionIndex,
+    required this.correctAnswer,
+    required this.onStartCountdown,
+    required this.onEndGame,
+  });
 
   @override
   _QuestionStatsState createState() => _QuestionStatsState();
@@ -44,7 +50,7 @@ class _QuestionStatsState extends State<QuestionStats> {
       print(' the fetched quiz is [in stats] : ' + updatedQuiz.toString());
     }
     await Future.delayed(
-        const Duration(seconds: 5)); // Introducing a delay of 2 seconds
+        const Duration(seconds: 2)); // Introducing a delay of 2 seconds
 
     return [chart1, chart2];
   }
@@ -79,12 +85,32 @@ class _QuestionStatsState extends State<QuestionStats> {
                 'Correct answer is: ${widget.correctAnswer}',
                 style: TextStyle(fontSize: 18),
               ),
-              if (topPlayers != null) TopNWinners(quiz: widget.quiz),
-              if (histogram != null) ChartScreen(chartData: histogram),
+              if (topPlayers != null)
+                TopNWinners(quiz: widget.quiz)
+              else
+                Container(),
+              if (histogram != null)
+                ChartScreen(chartData: histogram)
+              else
+                Container(),
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                  onPressed: widget.currentQuestionIndex + 1 <
+                          widget.quiz.questions.length
+                      ? widget.onStartCountdown
+                      : widget.onEndGame,
+                  child: widget.currentQuestionIndex + 1 <
+                          widget.quiz.questions.length
+                      ? Text("Show Next Question")
+                      : Text("Show Game Summary"))
             ],
           );
         } else {
-          return CircularProgressIndicator();
+          // return CircularProgressIndicator();
+          return Transform.scale(
+            scale: 3, // Adjust this scale value as needed.
+            child: CircularProgressIndicator(),
+          );
         }
       },
     );

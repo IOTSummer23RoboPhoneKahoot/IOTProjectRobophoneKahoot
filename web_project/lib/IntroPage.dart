@@ -47,30 +47,69 @@ class _introPageState extends State<introPage> {
               : ListView.builder(
                   itemCount: quizzes.length,
                   itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        QuizCard(quiz: quizzes[index]),
-                        ElevatedButton(
-                          onPressed: () {
-                            Routemaster.of(context)
-                                .push('/game/${quizzes[index].quizID}');
-                          },
-                          child: Text('Show Quiz'),
-                        ),
-                        SizedBox(height: 10.0),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    EditQuizDetails(quiz: quizzes[index]),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0), // Spacing between cards vertically
+                      child: Center(
+                        // Center the card horizontally
+                        child: Container(
+                          width: MediaQuery.of(context).size.width *
+                              0.4, // 40% width of the screen
+                          child: Card(
+                            elevation: 5.0, // Add shadow with elevation
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: QuizCard(quiz: quizzes[index]),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Column(
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Routemaster.of(context).push(
+                                              '/game/${quizzes[index].quizID}');
+                                        },
+                                        child: Text('Show Quiz'),
+                                      ),
+                                      SizedBox(height: 10),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditQuizDetails(
+                                                      quiz: quizzes[index]),
+                                            ),
+                                          );
+                                        },
+                                        child: Text('Edit Quiz'),
+                                      ),
+                                      SizedBox(height: 10),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          // Delete the quiz from the database
+                                          await deleteQuiz(
+                                              quizzes[index].quizID);
+
+                                          // Remove the deleted quiz from the list
+                                          setState(() {
+                                            quizzes.removeAt(index);
+                                          });
+                                        },
+                                        child: Text('Delete Quiz'),
+                                      )
+                                    ],
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                          child: Text('Edit Quiz'),
-                        ), // Add some space between ca // Add some space between cards
-                      ],
+                            ),
+                          ),
+                        ),
+                      ),
                     );
                   },
                 ),

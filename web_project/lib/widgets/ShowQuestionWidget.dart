@@ -72,7 +72,10 @@ class _QuizGameWidgetState extends State<QuizGameWidget> {
             widthFactor: 0.2,
             child: Padding(
               padding: const EdgeInsets.only(top: 20.0, right: 30.0),
-              child: Container(color: Colors.grey), // Placeholder for now.
+              child: AnswersEachQuestion(
+                  quizID: widget.quiz.quizID,
+                  questionNum:
+                      widget.currentQuestionIndex), // Placeholder for now.
             ),
           ),
         ),

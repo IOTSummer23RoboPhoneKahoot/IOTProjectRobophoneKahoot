@@ -61,20 +61,11 @@ class _InGameWidgetState extends State<InGameWidget> {
                 : QuestionStats(
                     quiz: widget.quiz,
                     currentQuestionIndex: _currentQuestionIndex,
-                    correctAnswer: correctAnswer,
+                    correctAnswer: widget.quiz.questions[_currentQuestionIndex]
+                        .correctOptionIndex,
+                    onStartCountdown: _startCountdown,
+                    onEndGame: _endGame,
                   )),
-        SizedBox(height: 20.0),
-        (_countdownTime == 0 && _questionDuration == 0)
-            ? ElevatedButton(
-                onPressed:
-                    is_game_finished == false ? _startCountdown : _endGame,
-                child: (_countdownTime == 0 && _questionDuration == 0)
-                    ? (is_game_finished == false
-                        ? Text("Show Next Question")
-                        : Text("Show Game Summary"))
-                    : Container(),
-              )
-            : Container()
       ],
     );
   }

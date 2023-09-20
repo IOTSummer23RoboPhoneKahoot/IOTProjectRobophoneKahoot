@@ -28,7 +28,7 @@ class Quiz {
     // Iterate over all players
     for (Player player in players) {
       // Check if the player has an answer for the given question
-      bool answered = player.answers[questionID].answer > 0;
+      bool answered = player.answers[questionID].answer >= 0;
       //print(answer.questionID);
       if (answered) {
         count++;

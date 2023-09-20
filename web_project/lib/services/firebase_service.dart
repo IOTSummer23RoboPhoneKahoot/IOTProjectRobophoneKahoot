@@ -120,3 +120,17 @@ Future<void> updateFlutterLocalTime() async {
       .child('Robophone/5669122872442880/flutterLocalTime')
       .update(updateTime);
 }
+
+Future<void> deleteQuiz(String quizID) async {
+  print(' this quiz id will be delted:' + quizID);
+  final DatabaseReference _databaseReference = FirebaseDatabase.instance.ref();
+  try {
+    await _databaseReference
+        .child('Robophone/5669122872442880/quizzes')
+        .child(quizID)
+        .remove();
+  } catch (e) {
+    print('Error deleting quiz: $e');
+    // Handle any error that may occur during deletion
+  }
+}
